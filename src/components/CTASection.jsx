@@ -1,45 +1,99 @@
-import { GOLD, NAVY, NAVY_MID } from "../constants/theme";
+import { useState } from "react";
+import { useReveal } from "../hooks/useReveal";
 
 export default function CTASection() {
+  const [email, setEmail] = useState("");
+  const ref = useReveal();
+
   return (
     <section style={{
-      padding: "80px 24px",
-      background: `linear-gradient(160deg, ${NAVY}, ${NAVY_MID})`,
+      background: "var(--dark)",
+      padding: "160px 32px",
+      position: "relative",
+      overflow: "hidden",
     }}>
-      <div style={{ maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+      {/* Decorative background glow */}
+      <div style={{
+        position: "absolute", top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 600, height: 400,
+        background: "radial-gradient(ellipse at center, rgba(212,168,83,0.06) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
+
+      {/* Hairline top border */}
+      <div style={{
+        position: "absolute", top: 0, left: "10%", right: "10%",
+        height: 1, background: "linear-gradient(90deg, transparent, var(--gold), transparent)",
+        opacity: 0.2,
+      }} />
+
+      <div ref={ref} className="reveal" style={{
+        maxWidth: 640, margin: "0 auto", textAlign: "center", position: "relative",
+      }}>
+
+        {/* Eyebrow */}
+        <div style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: 3,
+          textTransform: "uppercase", color: "var(--gold)", marginBottom: 28,
+        }}>
+          Join thousands of Kenyan drivers
+        </div>
+
+        {/* Headline */}
         <h2 style={{
-          fontSize: 32, fontWeight: 800, color: "#fff", letterSpacing: -0.8, marginBottom: 12,
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: "clamp(44px, 6vw, 72px)",
+          fontWeight: 600, color: "var(--text)",
+          lineHeight: 1.03, letterSpacing: -1.5,
+          marginBottom: 24,
         }}>
           Ready to get covered?
         </h2>
+
         <p style={{
-          fontSize: 15, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, marginBottom: 32,
+          fontSize: 14, color: "var(--text-muted)",
+          lineHeight: 1.85, marginBottom: 48, maxWidth: 400, margin: "0 auto 48px",
         }}>
-          Join thousands of Kenyan drivers choosing smarter private motor
-          insurance. Download the app or join our waitlist today.
+          Download the app or join our waitlist today. Insurance that respects your time and your money.
         </p>
 
-        <div style={{ display: "flex", gap: 0, justifyContent: "center", maxWidth: 420, margin: "0 auto" }}>
+        {/* Email capture */}
+        <div style={{ display: "flex", justifyContent: "center", maxWidth: 460, margin: "0 auto 24px" }}>
           <input
             type="email"
-            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your email address"
             style={{
-              flex: 1, padding: "16px 18px", fontSize: 14,
-              border: "1px solid rgba(255,255,255,0.15)", borderRight: "none",
-              borderRadius: "8px 0 0 8px", background: "rgba(255,255,255,0.06)",
-              color: "#fff", outline: "none",
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              flex: 1, padding: "17px 20px", fontSize: 13,
+              border: "1px solid rgba(212,168,83,0.2)", borderRight: "none",
+              background: "rgba(212,168,83,0.04)",
+              color: "var(--text)", outline: "none",
             }}
           />
-          <button style={{
-            padding: "16px 24px", fontSize: 14, fontWeight: 600,
-            background: GOLD, color: NAVY, border: "none", borderRadius: "0 8px 8px 0",
-            cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
-            whiteSpace: "nowrap",
-          }}>
+          <button
+            className="waitlist-btn"
+            style={{
+              padding: "17px 28px", fontSize: 10, fontWeight: 700,
+              letterSpacing: 1.5, textTransform: "uppercase",
+              background: "transparent",
+              color: "var(--gold)",
+              border: "1px solid rgba(212,168,83,0.2)",
+              whiteSpace: "nowrap",
+            }}
+          >
             Join waitlist
           </button>
         </div>
+
+        <div style={{
+          fontSize: 11, color: "var(--text-dim)",
+          fontWeight: 500, letterSpacing: 0.3,
+        }}>
+          No spam, ever. Unsubscribe anytime.
+        </div>
+
       </div>
     </section>
   );

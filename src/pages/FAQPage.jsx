@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GOLD, NAVY, NAVY_MID, GRAY } from "../constants/theme";
+import { useReveal } from "../hooks/useReveal";
 
 const faqs = [
   {
@@ -36,82 +36,122 @@ const faqs = [
   },
 ];
 
-export default function FAQPage() {
-  const [open, setOpen] = useState(null);
+function FAQItem({ item, globalIndex }) {
+  const [open, setOpen] = useState(false);
+  const ref = useReveal(globalIndex * 40);
 
-  const toggleFAQ = (id) => setOpen(open === id ? null : id);
+  return (
+    <div
+      ref={ref}
+      className="reveal"
+      style={{
+        borderBottom: "1px solid var(--border)",
+      }}
+    >
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: "100%", textAlign: "left",
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          padding: "24px 0",
+          background: "none", border: "none", color: "var(--text)",
+          gap: 20,
+        }}
+      >
+        <span style={{
+          fontSize: 15, fontWeight: 600, lineHeight: 1.4,
+          fontFamily: "'Syne', sans-serif",
+        }}>
+          {item.q}
+        </span>
+        <span style={{
+          flexShrink: 0, width: 28, height: 28,
+          border: "1px solid var(--border)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "transform 0.3s ease, background 0.2s",
+          transform: open ? "rotate(45deg)" : "rotate(0deg)",
+          background: open ? "var(--gold)" : "transparent",
+          color: open ? "var(--dark)" : "var(--gold)",
+        }}>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <rect x="5" y="0" width="2" height="12" rx="1"/>
+            <rect x="0" y="5" width="12" height="2" rx="1"/>
+          </svg>
+        </span>
+      </button>
+
+      <div className={`faq-answer ${open ? "open" : ""}`}>
+        <p style={{
+          fontSize: 13, color: "var(--text-muted)",
+          lineHeight: 1.85, paddingBottom: 24, paddingRight: 48,
+        }}>
+          {item.a}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function FAQPage() {
+  const heroRef = useReveal();
+  let globalIndex = 0;
 
   return (
     <>
-      {/* Hero */}
+      {/* ─── Hero ─── */}
       <section style={{
-        background: `linear-gradient(170deg, ${NAVY} 0%, ${NAVY_MID} 100%)`,
-        paddingTop: 130, paddingBottom: 60,
+        background: "var(--dark)",
+        paddingTop: 160, paddingBottom: 100,
+        position: "relative", overflow: "hidden",
       }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "0 24px" }}>
-          <div className="fade-up" style={{
-            fontSize: 11, fontWeight: 600, letterSpacing: 2, color: GOLD,
-            textTransform: "uppercase", marginBottom: 16,
-          }}>
-            FAQ
+        <div style={{
+          position: "absolute", top: 0, right: 0,
+          width: "50%", height: "100%",
+          background: "radial-gradient(ellipse 70% 70% at 80% 30%, rgba(212,168,83,0.05) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px" }}>
+          <div ref={heroRef} className="reveal">
+            <div style={{
+              fontSize: 10, fontWeight: 700, letterSpacing: 3,
+              textTransform: "uppercase", color: "var(--gold)", marginBottom: 28,
+            }}>
+              FAQ
+            </div>
+            <h1 style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "clamp(44px, 6vw, 78px)",
+              fontWeight: 600, color: "var(--text)",
+              lineHeight: 1.03, letterSpacing: -2,
+              maxWidth: 560,
+            }}>
+              Got questions?<br />
+              <em style={{ color: "var(--gold)", fontStyle: "italic" }}>We've got answers.</em>
+            </h1>
           </div>
-          <h1 className="fade-up delay-1" style={{
-            fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 800, color: "#fff",
-            lineHeight: 1.15, letterSpacing: -1, maxWidth: 480,
-          }}>
-            Got questions? We've got answers.
-          </h1>
         </div>
       </section>
 
-      {/* Questions */}
-      <section style={{ padding: "60px 24px 80px", maxWidth: 800, margin: "0 auto" }}>
-        {faqs.map((cat, ci) => (
-          <div key={ci} style={{ marginBottom: 40 }}>
-            <div style={{
-              fontSize: 11, fontWeight: 600, letterSpacing: 2, color: GOLD,
-              textTransform: "uppercase", marginBottom: 16,
-            }}>
-              {cat.cat}
+      {/* ─── Questions ─── */}
+      <section style={{ padding: "80px 32px 140px", background: "var(--surface)" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          {faqs.map((cat, ci) => (
+            <div key={ci} style={{ marginBottom: 64 }}>
+              <div style={{
+                fontSize: 10, fontWeight: 700, letterSpacing: 3,
+                textTransform: "uppercase", color: "var(--gold)",
+                marginBottom: 8, paddingBottom: 20,
+                borderBottom: "1px solid var(--border)",
+              }}>
+                {cat.cat}
+              </div>
+              {cat.items.map((item, ii) => {
+                const idx = globalIndex++;
+                return <FAQItem key={ii} item={item} globalIndex={idx} />;
+              })}
             </div>
-            {cat.items.map((item, ii) => {
-              const id = `${ci}-${ii}`;
-              const isOpen = open === id;
-              return (
-                <div
-                  key={ii}
-                  style={{ borderBottom: "1px solid #E8E6E1", padding: "16px 0", cursor: "pointer" }}
-                  onClick={() => toggleFAQ(id)}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h4 style={{ fontSize: 15, fontWeight: 600, color: NAVY, paddingRight: 16 }}>
-                      {item.q}
-                    </h4>
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      style={{
-                        flexShrink: 0, transition: "transform 0.2s",
-                        transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
-                      }}
-                    >
-                      <line x1="9" y1="4" x2="9" y2="14" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" />
-                      <line x1="4" y1="9" x2="14" y2="9" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                  </div>
-                  {isOpen && (
-                    <p className="fade-in" style={{
-                      fontSize: 14, color: GRAY, lineHeight: 1.7, marginTop: 10, paddingRight: 40,
-                    }}>
-                      {item.a}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
     </>
   );

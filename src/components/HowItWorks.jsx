@@ -1,52 +1,126 @@
-import { GOLD, NAVY, CREAM, GRAY } from "../constants/theme";
+import { useReveal } from "../hooks/useReveal";
 
 const steps = [
-  { num: "1", title: "Get a quote", desc: "Enter your vehicle details and get instant quotes from top carriers. Choose TPO, Third Party Plus, or Comprehensive cover." },
-  { num: "2", title: "Pay directly via M-Pesa", desc: "Your premium is paid directly to the insurance company via M-Pesa STK push. No middlemen handling your money." },
-  { num: "3", title: "Get covered instantly", desc: "Your policy is issued in real-time. Download your certificate and drive with confidence — immediately." },
+  {
+    num: "01",
+    title: "Get a quote",
+    desc: "Enter your vehicle details and receive instant quotes from top Kenyan carriers. Choose TPO, Third Party Plus, or Comprehensive cover — side by side.",
+  },
+  {
+    num: "02",
+    title: "Pay via M-Pesa",
+    desc: "Your premium goes directly to the insurance company via M-Pesa STK push. No middlemen hold your money. The insurer receives it immediately.",
+  },
+  {
+    num: "03",
+    title: "Drive, covered",
+    desc: "Your policy is issued in real-time the moment payment is confirmed. Download your certificate and drive with confidence — right away.",
+  },
 ];
 
-export default function HowItWorks() {
+function Step({ s, i }) {
+  const ref = useReveal(i * 120);
   return (
-    <section style={{ padding: "80px 24px", maxWidth: 1120, margin: "0 auto" }}>
-      <div style={{ textAlign: "center", marginBottom: 56 }}>
-        <div style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: 2, color: GOLD,
-          textTransform: "uppercase", marginBottom: 12,
-        }}>
-          How it works
-        </div>
-        <h2 style={{ fontSize: 32, fontWeight: 800, color: NAVY, letterSpacing: -0.8 }}>
-          Covered in three simple steps
-        </h2>
+    <div
+      ref={ref}
+      className="reveal"
+      style={{
+        display: "flex", gap: 40, alignItems: "flex-start",
+        padding: "52px 0",
+        borderBottom: "1px solid var(--border)",
+      }}
+    >
+      {/* Large numeral */}
+      <div style={{
+        fontFamily: "'Cormorant Garamond', serif",
+        fontSize: "clamp(64px, 8vw, 96px)",
+        fontWeight: 600, lineHeight: 1,
+        color: "transparent",
+        WebkitTextStroke: "1px rgba(212,168,83,0.25)",
+        minWidth: 100,
+        userSelect: "none",
+        flexShrink: 0,
+        marginTop: -8,
+      }}>
+        {s.num}
       </div>
 
-      <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-        {steps.map((s, i) => (
-          <div
-            key={i}
-            className={`fade-up delay-${i + 1}`}
-            style={{
-              flex: 1, minWidth: 260, padding: 32, borderRadius: 12,
-              background: CREAM, border: "1px solid #E8E6E1",
-            }}
-          >
+      {/* Content */}
+      <div style={{ flex: 1 }}>
+        <h3 style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: "clamp(28px, 3.5vw, 40px)",
+          fontWeight: 600, lineHeight: 1.1,
+          color: "var(--text)", marginBottom: 16,
+          letterSpacing: -0.5,
+        }}>
+          {s.title}
+        </h3>
+        <p style={{
+          fontSize: 14, color: "var(--text-muted)",
+          lineHeight: 1.85, maxWidth: 480,
+        }}>
+          {s.desc}
+        </p>
+      </div>
+
+      {/* Accent dot */}
+      <div style={{
+        width: 8, height: 8, borderRadius: "50%",
+        background: "var(--gold)", opacity: 0.5,
+        flexShrink: 0, marginTop: 8,
+      }} />
+    </div>
+  );
+}
+
+export default function HowItWorks() {
+  const headerRef = useReveal();
+
+  return (
+    <section style={{ padding: "140px 32px", background: "var(--dark)" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+
+        {/* Section header */}
+        <div
+          ref={headerRef}
+          className="reveal"
+          style={{
+            display: "flex", alignItems: "flex-end", justifyContent: "space-between",
+            flexWrap: "wrap", gap: 32,
+            paddingBottom: 0, marginBottom: 0,
+          }}
+        >
+          <div>
             <div style={{
-              fontSize: 13, fontWeight: 700, color: GOLD,
-              background: "rgba(201,165,92,0.1)", width: 36, height: 36,
-              borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
-              marginBottom: 16, letterSpacing: 0.5,
+              fontSize: 10, fontWeight: 700, letterSpacing: 3,
+              textTransform: "uppercase", color: "var(--gold)", marginBottom: 20,
             }}>
-              {s.num}
+              How it works
             </div>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: NAVY, marginBottom: 10 }}>
-              {s.title}
-            </h3>
-            <p style={{ fontSize: 14, color: GRAY, lineHeight: 1.7 }}>
-              {s.desc}
-            </p>
+            <h2 style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "clamp(38px, 5vw, 60px)",
+              fontWeight: 600, color: "var(--text)",
+              lineHeight: 1.05, letterSpacing: -1,
+            }}>
+              Covered in three<br />simple steps.
+            </h2>
           </div>
-        ))}
+
+          <p style={{
+            maxWidth: 280, fontSize: 13, color: "var(--text-muted)",
+            lineHeight: 1.85, fontWeight: 400, marginBottom: 4,
+          }}>
+            From quote to certificate in under three minutes. No agents, no paperwork, no queues.
+          </p>
+        </div>
+
+        {/* Steps */}
+        <div style={{ borderTop: "1px solid var(--border)", marginTop: 60 }}>
+          {steps.map((s, i) => <Step key={i} s={s} i={i} />)}
+        </div>
+
       </div>
     </section>
   );

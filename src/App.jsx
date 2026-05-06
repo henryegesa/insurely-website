@@ -14,11 +14,11 @@ export default function App() {
   };
 
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", background: "#fff" }}>
+    <div>
       <Nav page={page} setPage={navigate} />
-      {page === "Home" && <HomePage />}
+      {page === "Home"  && <HomePage />}
       {page === "About" && <AboutPage />}
-      {page === "FAQ" && <FAQPage />}
+      {page === "FAQ"   && <FAQPage />}
       <Footer setPage={navigate} />
     </div>
   );
