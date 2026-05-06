@@ -1,4 +1,5 @@
 import { useReveal } from "../hooks/useReveal";
+import { useBreakpoint } from "../hooks/useBreakpoint";
 
 const badges = [
   {
@@ -36,12 +37,24 @@ function TrustIcon({ name }) {
 
 function Badge({ b, i }) {
   const ref = useReveal(i * 80);
+  const { isMobile, isTablet } = useBreakpoint();
+
+  // On mobile: 1 col, on tablet: 2 col, on desktop: 4 col
+  const isLastInRow = isMobile
+    ? true
+    : isTablet
+      ? i % 2 === 1
+      : i === 3;
+  const isLast = i === badges.length - 1;
+
   return (
     <div ref={ref} className="reveal" style={{
-      flex: 1, minWidth: 220,
-      padding: "40px 32px",
+      flex: isMobile ? "1 1 100%" : isTablet ? "1 1 calc(50% - 1px)" : 1,
+      minWidth: isMobile ? "100%" : isTablet ? "calc(50% - 1px)" : 220,
+      padding: isMobile ? "32px 20px" : "40px 32px",
       background: "var(--cream)",
-      borderRight: i < 3 ? "1px solid rgba(26,22,18,0.1)" : "none",
+      borderRight: isLastInRow ? "none" : "1px solid rgba(26,22,18,0.1)",
+      borderBottom: isLast ? "none" : (isMobile || (isTablet && i >= 2)) ? "none" : isTablet && i < 2 ? "1px solid rgba(26,22,18,0.1)" : "none",
     }}>
       <div style={{
         width: 48, height: 48,
@@ -54,7 +67,7 @@ function Badge({ b, i }) {
       <h4 style={{
         fontSize: 15, fontWeight: 700,
         color: "var(--on-cream)", marginBottom: 10,
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Cabin', sans-serif",
       }}>
         {b.label}
       </h4>
@@ -70,25 +83,28 @@ function Badge({ b, i }) {
 
 export default function Trust() {
   const headerRef = useReveal();
+  const { isMobile } = useBreakpoint();
 
   return (
     <section style={{ background: "var(--cream)" }}>
-      {/* Header */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "100px 32px 60px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: isMobile ? "60px 20px 40px" : "100px 32px 60px" }}>
         <div ref={headerRef} className="reveal" style={{
-          display: "flex", alignItems: "flex-end", justifyContent: "space-between",
-          flexWrap: "wrap", gap: 24,
+          display: "flex",
+          alignItems: isMobile ? "flex-start" : "flex-end",
+          justifyContent: "space-between",
+          flexDirection: isMobile ? "column" : "row",
+          flexWrap: "wrap", gap: isMobile ? 16 : 24,
         }}>
           <div>
             <div style={{
               fontSize: 10, fontWeight: 700, letterSpacing: 3,
-              textTransform: "uppercase", color: "var(--gold)", marginBottom: 20,
+              textTransform: "uppercase", color: "var(--on-cream)", opacity: 0.5, marginBottom: 20,
             }}>
               Why trust Insurely
             </div>
             <h2 style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(38px, 5vw, 58px)",
+              fontFamily: "'Playfair Display', serif",
+              fontSize: isMobile ? "clamp(32px, 8vw, 48px)" : "clamp(38px, 5vw, 58px)",
               fontWeight: 600, color: "var(--on-cream)",
               lineHeight: 1.05, letterSpacing: -1,
             }}>
@@ -96,7 +112,8 @@ export default function Trust() {
             </h2>
           </div>
           <p style={{
-            maxWidth: 260, fontSize: 13, color: "var(--on-cream-muted)",
+            maxWidth: isMobile ? "100%" : 260,
+            fontSize: 13, color: "var(--on-cream-muted)",
             lineHeight: 1.85, marginBottom: 4,
           }}>
             Every policy issued through Insurely is underwritten by a regulated carrier and fully compliant with Kenyan insurance law.
@@ -104,7 +121,6 @@ export default function Trust() {
         </div>
       </div>
 
-      {/* Badges — flush full width */}
       <div style={{
         maxWidth: 1200, margin: "0 auto",
         display: "flex", flexWrap: "wrap",
@@ -113,7 +129,7 @@ export default function Trust() {
         {badges.map((b, i) => <Badge key={i} b={b} i={i} />)}
       </div>
 
-      <div style={{ height: 100 }} />
+      <div style={{ height: isMobile ? 60 : 100 }} />
     </section>
   );
 }

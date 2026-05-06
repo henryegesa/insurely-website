@@ -1,4 +1,5 @@
 import { useReveal } from "../hooks/useReveal";
+import { useBreakpoint } from "../hooks/useBreakpoint";
 
 const plans = [
   {
@@ -24,14 +25,17 @@ const plans = [
 
 function PlanCard({ p, i }) {
   const ref = useReveal(i * 100);
+  const { isMobile } = useBreakpoint();
 
   return (
     <div
       ref={ref}
       className="reveal plan-card"
       style={{
-        flex: 1, minWidth: 260, maxWidth: 380,
-        padding: "40px 36px",
+        flex: 1,
+        minWidth: isMobile ? "100%" : 260,
+        maxWidth: isMobile ? "100%" : 380,
+        padding: isMobile ? "32px 24px" : "40px 36px",
         background: p.featured
           ? "linear-gradient(160deg, #1C1A10 0%, #141210 100%)"
           : "rgba(255,255,255,0.02)",
@@ -42,7 +46,6 @@ function PlanCard({ p, i }) {
         boxShadow: p.featured ? "0 0 80px rgba(212,168,83,0.06)" : "none",
       }}
     >
-      {/* Recommended badge */}
       {p.featured && (
         <div style={{
           position: "absolute", top: -1, right: 32,
@@ -55,7 +58,6 @@ function PlanCard({ p, i }) {
         </div>
       )}
 
-      {/* Tag */}
       <div style={{
         fontSize: 9, fontWeight: 700, letterSpacing: 2,
         textTransform: "uppercase",
@@ -68,9 +70,8 @@ function PlanCard({ p, i }) {
         {p.tag}
       </div>
 
-      {/* Name */}
       <h3 style={{
-        fontFamily: "'Cormorant Garamond', serif",
+        fontFamily: "'Playfair Display', serif",
         fontSize: 28, fontWeight: 600,
         color: "var(--text)", lineHeight: 1.1,
         marginBottom: 16, letterSpacing: -0.3,
@@ -78,7 +79,6 @@ function PlanCard({ p, i }) {
         {p.name}
       </h3>
 
-      {/* Desc */}
       <p style={{
         fontSize: 13, color: "var(--text-muted)",
         lineHeight: 1.8, marginBottom: 32,
@@ -86,12 +86,8 @@ function PlanCard({ p, i }) {
         {p.desc}
       </p>
 
-      {/* Divider */}
-      <div style={{
-        height: 1, background: "var(--border)", marginBottom: 24,
-      }} />
+      <div style={{ height: 1, background: "var(--border)", marginBottom: 24 }} />
 
-      {/* Features */}
       {p.features.map((f, fi) => (
         <div key={fi} style={{
           display: "flex", alignItems: "center", gap: 12,
@@ -113,29 +109,37 @@ function PlanCard({ p, i }) {
 
 export default function CoverOptions() {
   const headerRef = useReveal();
+  const { isMobile } = useBreakpoint();
 
   return (
-    <section style={{ padding: "140px 32px", background: "var(--surface)" }}>
+    <section style={{ padding: isMobile ? "80px 20px" : "140px 32px", background: "var(--surface)" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
 
-        <div ref={headerRef} className="reveal" style={{ marginBottom: 72 }}>
+        <div ref={headerRef} className="reveal" style={{ marginBottom: isMobile ? 48 : 72 }}>
           <div style={{
             fontSize: 10, fontWeight: 700, letterSpacing: 3,
             textTransform: "uppercase", color: "var(--gold)", marginBottom: 20,
           }}>
             What we offer
           </div>
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 24 }}>
+          <div style={{
+            display: "flex",
+            alignItems: isMobile ? "flex-start" : "flex-end",
+            justifyContent: "space-between",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 16 : 24,
+          }}>
             <h2 style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(38px, 5vw, 60px)",
+              fontFamily: "'Playfair Display', serif",
+              fontSize: isMobile ? "clamp(32px, 8vw, 48px)" : "clamp(38px, 5vw, 60px)",
               fontWeight: 600, color: "var(--text)",
               lineHeight: 1.05, letterSpacing: -1,
             }}>
               Private motor cover,<br />three ways.
             </h2>
             <p style={{
-              maxWidth: 280, fontSize: 13, color: "var(--text-muted)",
+              maxWidth: isMobile ? "100%" : 280,
+              fontSize: 13, color: "var(--text-muted)",
               lineHeight: 1.85,
             }}>
               Every level of cover issued instantly through the app, paid directly to your insurer via M-Pesa.
@@ -143,7 +147,12 @@ export default function CoverOptions() {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 20, flexWrap: "wrap", justifyContent: "center" }}>
+        <div style={{
+          display: "flex", gap: 20,
+          flexDirection: isMobile ? "column" : "row",
+          flexWrap: isMobile ? "nowrap" : "wrap",
+          justifyContent: "center",
+        }}>
           {plans.map((p, i) => <PlanCard key={i} p={p} i={i} />)}
         </div>
 

@@ -1,13 +1,40 @@
 import { useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+import { useBreakpoint } from "../hooks/useBreakpoint";
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 const STATS = [
   { num: "3 min",  label: "Average time to get covered" },
-  { num: "100%",   label: "Direct M-Pesa to insurer" },
+  { num: "100%",   label: "Payments directly to the insurer" },
   { num: "IRA",    label: "Licensed & regulated" },
 ];
 
 export default function Hero() {
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle");
+  const [honeypot, setHoneypot] = useState("");
+  const { isMobile, isTablet } = useBreakpoint();
+
+  async function handleWaitlist() {
+    // Silent bot rejection
+    if (honeypot) { setStatus("success"); return; }
+    // Stricter email validation
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return;
+    setStatus("loading");
+    const { error } = await supabase.from("pending_verifications").insert({ email });
+    if (!error) {
+      setStatus("success");
+      setEmail("");
+    } else if (error.code === "23505") {
+      setStatus("duplicate");
+    } else {
+      setStatus("error");
+    }
+  }
 
   return (
     <section style={{
@@ -29,34 +56,36 @@ export default function Hero() {
         pointerEvents: "none",
       }} />
 
-      {/* Geometric arc — right side decoration */}
-      <svg
-        aria-hidden="true"
-        style={{
-          position: "absolute", right: "-4vw", top: "50%",
-          transform: "translateY(-50%)",
-          width: "46vw", height: "78vh",
-          opacity: 0.07,
-          pointerEvents: "none",
-        }}
-        viewBox="0 0 460 580" fill="none"
-      >
-        <circle cx="460" cy="290" r="260" stroke="#D4A853" strokeWidth="0.8" />
-        <circle cx="460" cy="290" r="190" stroke="#D4A853" strokeWidth="0.5" />
-        <circle cx="460" cy="290" r="330" stroke="#D4A853" strokeWidth="0.4" />
-        <line x1="0" y1="290" x2="460" y2="290" stroke="#D4A853" strokeWidth="0.5" />
-        <line x1="460" y1="0" x2="460" y2="580" stroke="#D4A853" strokeWidth="0.5" />
-        <line x1="90" y1="30" x2="460" y2="290" stroke="#D4A853" strokeWidth="0.3" />
-        <line x1="90" y1="550" x2="460" y2="290" stroke="#D4A853" strokeWidth="0.3" />
-      </svg>
+      {/* Geometric arc */}
+      {!isMobile && (
+        <svg
+          aria-hidden="true"
+          style={{
+            position: "absolute", right: "-4vw", top: "50%",
+            transform: "translateY(-50%)",
+            width: "46vw", height: "78vh",
+            opacity: 0.07,
+            pointerEvents: "none",
+          }}
+          viewBox="0 0 460 580" fill="none"
+        >
+          <circle cx="460" cy="290" r="260" stroke="#D4A853" strokeWidth="0.8" />
+          <circle cx="460" cy="290" r="190" stroke="#D4A853" strokeWidth="0.5" />
+          <circle cx="460" cy="290" r="330" stroke="#D4A853" strokeWidth="0.4" />
+          <line x1="0" y1="290" x2="460" y2="290" stroke="#D4A853" strokeWidth="0.5" />
+          <line x1="460" y1="0" x2="460" y2="580" stroke="#D4A853" strokeWidth="0.5" />
+          <line x1="90" y1="30" x2="460" y2="290" stroke="#D4A853" strokeWidth="0.3" />
+          <line x1="90" y1="550" x2="460" y2="290" stroke="#D4A853" strokeWidth="0.3" />
+        </svg>
+      )}
 
-      {/* Ghost headline — decorative */}
+      {/* Ghost headline */}
       <div
         aria-hidden="true"
         style={{
           position: "absolute", bottom: -24, left: -8,
-          fontFamily: "'Cormorant Garamond', serif",
-          fontSize: "clamp(100px,16vw,210px)",
+          fontFamily: "'Playfair Display', serif",
+          fontSize: "clamp(80px,16vw,210px)",
           fontWeight: 700,
           color: "transparent",
           WebkitTextStroke: "1px rgba(212,168,83,0.045)",
@@ -71,12 +100,17 @@ export default function Hero() {
       </div>
 
       {/* Main content */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", width: "100%", position: "relative" }}>
+      <div style={{
+        maxWidth: 1200, margin: "0 auto",
+        padding: isMobile ? "40px 20px" : "0 32px",
+        width: "100%", position: "relative",
+      }}>
         <div style={{ maxWidth: 680 }}>
 
           {/* Eyebrow */}
           <div className="fade-up" style={{
-            display: "inline-flex", alignItems: "center", gap: 14, marginBottom: 36,
+            display: "inline-flex", alignItems: "center", gap: 14,
+            marginBottom: isMobile ? 24 : 36,
           }}>
             <div style={{ width: 36, height: 1, background: "var(--gold)", opacity: 0.5 }} />
             <span style={{
@@ -89,104 +123,134 @@ export default function Hero() {
 
           {/* Headline */}
           <h1 className="fade-up delay-1" style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: "clamp(50px, 7vw, 90px)",
-            fontWeight: 600, lineHeight: 1.03,
+            fontFamily: "'Playfair Display', serif",
+            fontSize: "clamp(44px, 7vw, 90px)",
+            fontWeight: 600, lineHeight: 1.05,
             letterSpacing: -2, color: "var(--text)",
-            marginBottom: 32,
+            marginBottom: isMobile ? 20 : 32,
           }}>
             Private motor<br />
-            insurance,{" "}
-            <em style={{ color: "var(--gold)", fontStyle: "italic" }}>reimagined</em>
-            <br />for Kenya.
+            <span style={{ whiteSpace: "nowrap" }}>insurance, <em style={{ color: "var(--gold)", fontStyle: "italic" }}>reimagined</em></span>
           </h1>
 
           {/* Subheading */}
           <p className="fade-up delay-2" style={{
-            fontSize: 15, lineHeight: 1.85,
+            fontSize: isMobile ? 14 : 15, lineHeight: 1.85,
             color: "var(--text-muted)",
-            maxWidth: 420, marginBottom: 52,
+            maxWidth: isMobile ? "100%" : 420,
+            marginBottom: isMobile ? 36 : 52,
             fontWeight: 400,
           }}>
             Get covered in minutes with instant policy issuance, transparent
-            pricing, and payments made directly to the insurer via M-Pesa.
+            pricing, and payments made directly to the insurer via M-Pesa or Airtel Money.
           </p>
 
-          {/* CTAs */}
-          <div className="fade-up delay-3" style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "stretch" }}>
-
-            {/* Google Play */}
-            <a
-              href="#"
-              className="play-btn"
+          {/* Waitlist CTA */}
+          <div className="fade-up delay-3" style={{ position: "relative" }}>
+            {/* Honeypot — hidden from humans, traps bots */}
+            <input
+              type="text"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
               style={{
-                display: "inline-flex", alignItems: "center", gap: 10,
-                background: "var(--gold)", color: "var(--dark)",
-                padding: "15px 28px",
-                fontWeight: 700, fontSize: 11, letterSpacing: 1.5,
-                textTransform: "uppercase",
-                whiteSpace: "nowrap",
+                position: "absolute",
+                left: "-9999px",
+                width: 1,
+                height: 1,
+                opacity: 0,
+                pointerEvents: "none",
               }}
-            >
-              <svg width="18" height="20" viewBox="0 0 20 22" fill="none">
-                <path d="M1 1.6L11.2 11 1 20.4V1.6z" fill="currentColor" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
-                <path d="M11.2 11L15.8 6.8 4 1l7.2 10z" fill="currentColor" opacity="0.7"/>
-                <path d="M11.2 11L4 21l11.8-5.8-4.6-4.2z" fill="currentColor" opacity="0.5"/>
-                <path d="M15.8 6.8L18.2 9.5a1.8 1.8 0 010 3L15.8 15.2 11.2 11l4.6-4.2z" fill="currentColor" opacity="0.85"/>
-              </svg>
-              Google Play
-            </a>
-
-            {/* Waitlist */}
-            <div style={{ display: "flex" }}>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email address"
-                style={{
-                  padding: "15px 18px", fontSize: 13,
-                  border: "1px solid rgba(212,168,83,0.2)", borderRight: "none",
-                  background: "rgba(212,168,83,0.04)",
-                  color: "var(--text)", outline: "none", width: 210,
-                }}
-              />
-              <button
-                className="waitlist-btn"
-                style={{
-                  padding: "15px 22px", fontSize: 10, fontWeight: 700,
-                  letterSpacing: 1.5, textTransform: "uppercase",
-                  background: "transparent",
-                  color: "var(--gold)",
-                  border: "1px solid rgba(212,168,83,0.2)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Join waitlist
-              </button>
-            </div>
-
+            />
+            {status === "success" ? (
+              <div style={{
+                padding: "15px 22px", fontSize: 12, fontWeight: 600,
+                color: "var(--gold)", border: "1px solid rgba(212,168,83,0.2)",
+                letterSpacing: 0.5, display: "inline-block",
+              }}>
+                Check your inbox — we sent you a confirmation link.
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <div style={{
+                  display: "flex",
+                  flexDirection: isMobile ? "column" : "row",
+                  gap: isMobile ? 0 : 0,
+                }}>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
+                    onKeyDown={(e) => e.key === "Enter" && handleWaitlist()}
+                    placeholder="Your email address"
+                    style={{
+                      padding: "15px 18px", fontSize: 13,
+                      border: "1px solid rgba(212,168,83,0.2)",
+                      borderRight: isMobile ? "1px solid rgba(212,168,83,0.2)" : "none",
+                      borderBottom: isMobile ? "none" : "1px solid rgba(212,168,83,0.2)",
+                      background: "rgba(212,168,83,0.04)",
+                      color: "var(--text)", outline: "none",
+                      width: isMobile ? "100%" : 230,
+                    }}
+                  />
+                  <button
+                    className="waitlist-btn"
+                    onClick={handleWaitlist}
+                    disabled={status === "loading"}
+                    style={{
+                      padding: "15px 22px", fontSize: 10, fontWeight: 700,
+                      letterSpacing: 1.5, textTransform: "uppercase",
+                      background: "transparent",
+                      color: "var(--gold)",
+                      border: "1px solid rgba(212,168,83,0.2)",
+                      whiteSpace: "nowrap",
+                      cursor: status === "loading" ? "wait" : "pointer",
+                      width: isMobile ? "100%" : "auto",
+                    }}
+                  >
+                    {status === "loading" ? "..." : "Join waitlist"}
+                  </button>
+                </div>
+                {status === "duplicate" && (
+                  <span style={{ fontSize: 11, color: "var(--gold)", opacity: 0.7 }}>
+                    Check your inbox — you should have a confirmation link.
+                  </span>
+                )}
+                {status === "error" && (
+                  <span style={{ fontSize: 11, color: "#e57373" }}>
+                    Something went wrong. Please try again.
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Stats row */}
         <div className="fade-up delay-4" style={{
-          marginTop: 100,
-          display: "flex", gap: 0,
+          marginTop: isMobile ? 56 : 100,
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: 0,
           borderTop: "1px solid var(--border)",
-          paddingTop: 40,
+          paddingTop: isMobile ? 32 : 40,
         }}>
           {STATS.map((s, i) => (
             <div key={i} style={{
               flex: 1,
-              paddingLeft: i > 0 ? 40 : 0,
-              paddingRight: i < 2 ? 40 : 0,
-              borderRight: i < 2 ? "1px solid var(--border)" : "none",
+              paddingLeft: isMobile ? 0 : (i > 0 ? 40 : 0),
+              paddingRight: isMobile ? 0 : (i < 2 ? 40 : 0),
+              paddingTop: isMobile && i > 0 ? 24 : 0,
+              paddingBottom: isMobile && i < 2 ? 24 : 0,
+              borderRight: !isMobile && i < 2 ? "1px solid var(--border)" : "none",
+              borderBottom: isMobile && i < 2 ? "1px solid var(--border)" : "none",
             }}>
               <div style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 42, fontWeight: 600,
-                color: "var(--gold)", lineHeight: 1, marginBottom: 10,
+                fontFamily: "'Playfair Display', serif",
+                fontSize: isMobile ? 36 : 42, fontWeight: 600,
+                color: "var(--gold)", lineHeight: 1, marginBottom: 8,
               }}>
                 {s.num}
               </div>

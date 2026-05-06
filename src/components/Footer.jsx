@@ -1,4 +1,7 @@
+import { useBreakpoint } from "../hooks/useBreakpoint";
+
 export default function Footer({ setPage }) {
+  const { isMobile } = useBreakpoint();
   const links = [
     { heading: "Company", items: ["Home", "About", "FAQ"] },
     { heading: "Legal",   items: ["Privacy policy", "Terms of service"] },
@@ -9,20 +12,22 @@ export default function Footer({ setPage }) {
     <footer style={{
       background: "var(--surface)",
       borderTop: "1px solid var(--border)",
-      padding: "72px 32px 40px",
+      padding: isMobile ? "48px 20px 32px" : "72px 32px 40px",
     }}>
       <div style={{
         maxWidth: 1200, margin: "0 auto",
-        display: "flex", justifyContent: "space-between",
-        flexWrap: "wrap", gap: 48,
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        justifyContent: "space-between",
+        flexWrap: "wrap", gap: isMobile ? 40 : 48,
       }}>
 
         {/* Brand */}
-        <div style={{ maxWidth: 280 }}>
+        <div style={{ maxWidth: isMobile ? "100%" : 280 }}>
           <div
             onClick={() => setPage("Home")}
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'Playfair Display', serif",
               fontWeight: 600, fontSize: 22,
               color: "var(--gold)",
               cursor: "pointer",
@@ -43,7 +48,11 @@ export default function Footer({ setPage }) {
         </div>
 
         {/* Links */}
-        <div style={{ display: "flex", gap: 56, flexWrap: "wrap" }}>
+        <div style={{
+          display: "flex",
+          gap: isMobile ? 32 : 56,
+          flexWrap: "wrap",
+        }}>
           {links.map((col) => (
             <div key={col.heading}>
               <div style={{
@@ -78,10 +87,13 @@ export default function Footer({ setPage }) {
 
       {/* Bottom bar */}
       <div style={{
-        maxWidth: 1200, margin: "48px auto 0",
-        paddingTop: 28,
+        maxWidth: 1200, margin: "40px auto 0",
+        paddingTop: 24,
         borderTop: "1px solid var(--border-soft)",
-        display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        justifyContent: "space-between",
+        flexWrap: "wrap", gap: isMobile ? 8 : 12,
         fontSize: 11, color: "var(--text-dim)",
       }}>
         <span>© 2026 Insurely Ltd. All rights reserved.</span>

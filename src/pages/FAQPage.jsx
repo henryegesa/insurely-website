@@ -60,7 +60,7 @@ function FAQItem({ item, globalIndex }) {
       >
         <span style={{
           fontSize: 15, fontWeight: 600, lineHeight: 1.4,
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Cabin', sans-serif",
         }}>
           {item.q}
         </span>
@@ -119,7 +119,7 @@ export default function FAQPage() {
               FAQ
             </div>
             <h1 style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'Playfair Display', serif",
               fontSize: "clamp(44px, 6vw, 78px)",
               fontWeight: 600, color: "var(--text)",
               lineHeight: 1.03, letterSpacing: -2,

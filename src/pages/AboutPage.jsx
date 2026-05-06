@@ -64,7 +64,7 @@ export default function AboutPage() {
               About Insurely
             </div>
             <h1 style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'Playfair Display', serif",
               fontSize: "clamp(44px, 6vw, 78px)",
               fontWeight: 600, color: "var(--text)",
               lineHeight: 1.03, letterSpacing: -2,
@@ -98,7 +98,7 @@ export default function AboutPage() {
                 The problem
               </div>
               <h2 style={{
-                fontFamily: "'Cormorant Garamond', serif",
+                fontFamily: "'Playfair Display', serif",
                 fontSize: "clamp(28px, 3.5vw, 42px)",
                 fontWeight: 600, color: "var(--text)",
                 letterSpacing: -0.8, marginBottom: 24, lineHeight: 1.1,
@@ -147,12 +147,12 @@ export default function AboutPage() {
             <div style={{ flex: 1, minWidth: 280 }}>
               <div style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: 3,
-                textTransform: "uppercase", color: "var(--gold)", marginBottom: 24,
+                textTransform: "uppercase", color: "var(--on-cream)", opacity: 0.5, marginBottom: 24,
               }}>
                 Regulatory compliance
               </div>
               <h2 style={{
-                fontFamily: "'Cormorant Garamond', serif",
+                fontFamily: "'Playfair Display', serif",
                 fontSize: "clamp(28px, 3.5vw, 48px)",
                 fontWeight: 600, color: "var(--on-cream)",
                 letterSpacing: -0.8, marginBottom: 24, lineHeight: 1.1,
@@ -183,7 +183,7 @@ export default function AboutPage() {
                 </svg>
                 <div>
                   <div style={{
-                    fontFamily: "'Cormorant Garamond', serif",
+                    fontFamily: "'Playfair Display', serif",
                     fontSize: 22, fontWeight: 600, color: "var(--on-cream)", marginBottom: 4,
                   }}>
                     IRA Licensed
