@@ -206,7 +206,7 @@ export default function Hero({ setPage }) {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  RESERVE MY SPOT →
+                  SEND ME MORE INFO →
                 </button>
               </div>
               <input type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} style={{ display: "none" }} tabIndex={-1} />
@@ -336,7 +336,7 @@ export default function Hero({ setPage }) {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  RESERVE MY SPOT →
+                  SEND ME MORE INFO →
                 </button>
               </div>
               <input type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} style={{ display: "none" }} tabIndex={-1} />
