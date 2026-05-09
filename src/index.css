@@ -65,6 +65,22 @@ input {
   to   { opacity: 1; transform: none; }
 }
 
+/* Carriers marquee */
+@keyframes carriers-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.carriers-track {
+  display: inline-flex;
+  animation: carriers-scroll 28s linear infinite;
+  white-space: nowrap;
+}
+
+.carriers-track:hover {
+  animation-play-state: paused;
+}
+
 /* FAQ accordion */
 .faq-answer {
   max-height: 0;
@@ -94,4 +110,50 @@ input {
 .nav-cta:hover {
   background: #c9a55c !important;
   color: #0a0907 !important;
+}
+
+/* Prevent horizontal overflow on all viewports */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Touch targets — minimum 44px for mobile usability */
+@media (max-width: 767px) {
+  button, [role="button"] {
+    min-height: 44px;
+  }
+
+  input[type="email"],
+  input[type="text"] {
+    font-size: 16px; /* prevent iOS zoom on focus */
+  }
+
+  /* Faster reveal on mobile — less delay feels snappier */
+  .reveal {
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+}
+
+/* Tablet refinements */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .reveal {
+    transition: opacity 0.75s ease, transform 0.75s ease;
+  }
+}
+
+/* Watch / very small screens (< 320px) */
+@media (max-width: 319px) {
+  body {
+    font-size: 14px;
+  }
+
+  .carriers-track {
+    animation-duration: 18s;
+  }
+
+  /* Scale down large numbers in HowItWorks */
+  h1 {
+    font-size: 32px !important;
+  }
 }
