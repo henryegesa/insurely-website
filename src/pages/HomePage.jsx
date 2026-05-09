@@ -4,14 +4,14 @@ import CoverOptions from "../components/CoverOptions";
 import Trust from "../components/Trust";
 import CTASection from "../components/CTASection";
 
-export default function HomePage() {
+export default function HomePage({ setPage }) {
   return (
     <>
-      <Hero />
+      <Hero setPage={setPage} />
       <HowItWorks />
       <CoverOptions />
       <Trust />
-      <CTASection />
+      <CTASection setPage={setPage} />
     </>
   );
 }

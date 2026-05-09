@@ -1,104 +1,146 @@
 import { useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { useReveal } from "../hooks/useReveal";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 
-export default function CTASection() {
-  const [email, setEmail] = useState("");
-  const ref = useReveal();
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
+
+const ConcentricCircles = () => (
+  <svg
+    width="1100"
+    height="1100"
+    viewBox="0 0 1100 1100"
+    fill="none"
+    style={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      opacity: 0.5,
+      pointerEvents: "none",
+    }}
+  >
+    {[100, 180, 260, 340, 420, 500].map((r) => (
+      <circle key={r} cx="550" cy="550" r={r} stroke="#c9a55c" strokeWidth="1" />
+    ))}
+  </svg>
+);
+
+export default function CTASection({ setPage }) {
   const { isMobile } = useBreakpoint();
+  const ref0 = useReveal(0);
+  const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [status, setStatus] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (honeypot) return;
+    if (!email || !email.includes("@")) return;
+    setStatus("loading");
+    try {
+      const { error } = await supabase.from("pending_verifications").insert([{ email }]);
+      if (error) {
+        setStatus(error.code === "23505" ? "duplicate" : "error");
+      } else {
+        setStatus("success");
+        setEmail("");
+        if (setPage) setPage("Confirmation");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
 
   return (
-    <section style={{
-      background: "var(--dark)",
-      padding: isMobile ? "100px 20px" : "160px 32px",
-      position: "relative",
-      overflow: "hidden",
-    }}>
-      <div style={{
-        position: "absolute", top: "50%", left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: 600, height: 400,
-        background: "radial-gradient(ellipse at center, rgba(212,168,83,0.06) 0%, transparent 70%)",
-        pointerEvents: "none",
-      }} />
-
-      <div style={{
-        position: "absolute", top: 0, left: "10%", right: "10%",
-        height: 1, background: "linear-gradient(90deg, transparent, var(--gold), transparent)",
-        opacity: 0.2,
-      }} />
-
-      <div ref={ref} className="reveal" style={{
-        maxWidth: 640, margin: "0 auto", textAlign: "center", position: "relative",
-      }}>
-        <div style={{
-          fontSize: 10, fontWeight: 700, letterSpacing: 3,
-          textTransform: "uppercase", color: "var(--gold)", marginBottom: 28,
-        }}>
-          Join thousands of Kenyan drivers
+    <section
+      style={{
+        background: "#0a0907",
+        padding: isMobile ? "80px 24px" : "100px 48px",
+        textAlign: "center",
+        position: "relative",
+        overflow: "hidden",
+        borderTop: "1px solid #2a2218",
+      }}
+    >
+      <ConcentricCircles />
+      <div ref={ref0} className="reveal" style={{ position: "relative", zIndex: 1, maxWidth: 640, margin: "0 auto" }}>
+        {/* Eyebrow */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 28 }}>
+          <div style={{ width: 36, height: 1, background: "#c9a55c" }} />
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, letterSpacing: 4, color: "#c9a55c", fontWeight: 600 }}>
+            JOIN THOUSANDS OF KENYAN DRIVERS
+          </span>
+          <div style={{ width: 36, height: 1, background: "#c9a55c" }} />
         </div>
 
-        <h2 style={{
-          fontFamily: "'Playfair Display', serif",
-          fontSize: isMobile ? "clamp(36px, 9vw, 56px)" : "clamp(44px, 6vw, 72px)",
-          fontWeight: 600, color: "var(--text)",
-          lineHeight: 1.03, letterSpacing: -1.5,
-          marginBottom: 24,
-        }}>
-          Ready to get covered?
+        <h2
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: isMobile ? 52 : 88,
+            fontWeight: 400,
+            color: "#f5f1e8",
+            lineHeight: 1.05,
+            marginBottom: 28,
+          }}
+        >
+          Ready to{" "}
+          <em style={{ color: "#c9a55c", fontStyle: "italic" }}>get covered?</em>
         </h2>
 
-        <p style={{
-          fontSize: 14, color: "var(--text-muted)",
-          lineHeight: 1.85, marginBottom: 48,
-          maxWidth: 400, margin: "0 auto 48px",
-        }}>
-          Download the app or join our waitlist today. Insurance that respects your time and your money.
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 17, color: "#b8b1a3", lineHeight: 1.7, marginBottom: 40 }}>
+          Join the waitlist today and be among the first Kenyan drivers to experience insurance the way it should be — fast, fair, and fully digital.
         </p>
 
-        <div style={{
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          justifyContent: "center",
-          maxWidth: 460, margin: "0 auto 24px",
-        }}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 0, maxWidth: 520, margin: "0 auto" }}>
           <input
             type="email"
+            placeholder="Your email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Your email address"
             style={{
-              flex: 1, padding: "17px 20px", fontSize: 13,
-              border: "1px solid rgba(212,168,83,0.2)",
-              borderRight: isMobile ? "1px solid rgba(212,168,83,0.2)" : "none",
-              borderBottom: isMobile ? "none" : undefined,
-              background: "rgba(212,168,83,0.04)",
-              color: "var(--text)", outline: "none",
-              width: isMobile ? "100%" : "auto",
+              flex: 1,
+              padding: "16px 20px",
+              background: "transparent",
+              border: "1px solid #3a2f1c",
+              borderRight: isMobile ? "1px solid #3a2f1c" : "none",
+              color: "#f5f1e8",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 15,
+              outline: "none",
             }}
           />
           <button
-            className="waitlist-btn"
+            type="submit"
             style={{
-              padding: "17px 28px", fontSize: 10, fontWeight: 700,
-              letterSpacing: 1.5, textTransform: "uppercase",
-              background: "transparent",
-              color: "var(--gold)",
-              border: "1px solid rgba(212,168,83,0.2)",
+              padding: "16px 28px",
+              background: "#c9a55c",
+              color: "#0a0907",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12,
+              letterSpacing: 2,
+              fontWeight: 700,
+              border: "none",
+              cursor: "pointer",
               whiteSpace: "nowrap",
-              width: isMobile ? "100%" : "auto",
             }}
           >
-            Join waitlist
+            JOIN WAITLIST →
           </button>
-        </div>
+        </form>
+        <input type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} style={{ display: "none" }} tabIndex={-1} />
 
-        <div style={{
-          fontSize: 11, color: "var(--text-dim)",
-          fontWeight: 500, letterSpacing: 0.3,
-        }}>
-          No spam, ever. Unsubscribe anytime.
-        </div>
+        {status === "success" && <p style={{ color: "#7ec48c", fontSize: 13, marginTop: 14 }}>You're on the list! Check your inbox.</p>}
+        {status === "duplicate" && <p style={{ color: "#c9a55c", fontSize: 13, marginTop: 14 }}>That email is already on the waitlist.</p>}
+        {status === "error" && <p style={{ color: "#b8b1a3", fontSize: 13, marginTop: 14 }}>Something went wrong. Please try again.</p>}
+
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#7a7261", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7ec48c", display: "inline-block" }} />
+          No spam. Unsubscribe at any time. IRA regulated.
+        </p>
       </div>
     </section>
   );

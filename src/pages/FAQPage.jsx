@@ -1,158 +1,136 @@
 import { useState } from "react";
 import { useReveal } from "../hooks/useReveal";
+import { useBreakpoint } from "../hooks/useBreakpoint";
 
 const faqs = [
   {
-    cat: "Coverage",
-    items: [
-      { q: "What types of private motor cover do you offer?", a: "We offer three levels of cover: Third Party Only (TPO) — the legal minimum covering damage to others; Third Party Plus (TPP) — TPO enhanced with theft and fire protection for your own vehicle; and Comprehensive — full protection including own-vehicle accident damage, windscreen, and personal accident benefit." },
-      { q: "What's Third Party Plus and who is it for?", a: "Third Party Plus (TPP) is the smart middle ground between TPO and Comprehensive. It covers everything TPO does, plus it protects your own vehicle against theft and fire. It's ideal if you want more than the legal minimum but don't need full comprehensive cover." },
-      { q: "Does my cover start immediately?", a: "Yes. Once your M-Pesa payment is confirmed by the insurer, your policy is issued instantly. You can download your digital certificate right away and you're legally covered to drive." },
-      { q: "Can I upgrade my cover later?", a: "Yes, you can upgrade from TPO to Third Party Plus or Comprehensive at any time through the app. The pricing will be adjusted based on your remaining policy period." },
-    ],
+    q: "When does Insurely launch?",
+    a: "We're targeting Q3 2026 for our public launch in Kenya. Waitlist members will get early access before anyone else, along with a first-mover pricing advantage.",
   },
   {
-    cat: "Payments",
-    items: [
-      { q: "How do I pay for my insurance?", a: "Your premium is paid directly to the insurance company via M-Pesa STK push. When you're ready to pay, we'll trigger an STK push to your phone — just enter your M-Pesa PIN to confirm. The money goes straight to the insurer, not to Insurely." },
-      { q: "Why does my payment go directly to the insurer?", a: "For your protection. By paying the insurance company directly, you can be confident your premium is received by the underwriter immediately. There's no middleman holding your funds — your cover is activated the moment the insurer confirms payment." },
-      { q: "Can I pay in installments?", a: "We're working on flexible payment plans. For now, premiums are paid in full at the time of purchase. Join our waitlist to be the first to know when installment options become available." },
-      { q: "Is my payment information secure?", a: "Absolutely. All transactions are processed through Safaricom's M-Pesa infrastructure with bank-grade encryption. We never store your M-Pesa PIN or sensitive payment details." },
-    ],
+    q: "Is Insurely regulated by the IRA?",
+    a: "Yes. Insurely operates under the Insurance Regulatory Authority of Kenya. Every insurer on our platform is IRA-licensed. Your policy is legally binding and fully compliant.",
   },
   {
-    cat: "Claims",
-    items: [
-      { q: "How do I file a claim?", a: "You can initiate a claim directly through the Insurely app. We'll guide you through the process step by step, including uploading photos and documentation. Claims are handled by your insurance carrier." },
-      { q: "How long does a claim take to process?", a: "Claim processing times depend on the carrier and complexity of the claim. We work closely with our carrier partners to ensure claims are handled as quickly as possible, and you can track your claim status in the app." },
-    ],
+    q: "How does payment work?",
+    a: "You pay via M-Pesa or Airtel Money. We send an STK push to your phone — you enter your PIN and the payment goes direct to the insurer. Insurely never holds your money.",
   },
   {
-    cat: "Trust & regulation",
-    items: [
-      { q: "Is Insurely a real insurance company?", a: "Insurely is a licensed digital insurance agency — not an insurance company. We connect you with regulated insurance carriers who underwrite and back your policy. Think of us as the smartest, fastest way to buy legitimate motor insurance." },
-      { q: "Is Insurely regulated?", a: "Yes. We operate under the oversight of the Insurance Regulatory Authority of Kenya (IRA). Every policy issued through Insurely is fully compliant with Kenyan insurance regulations." },
-    ],
+    q: "How quickly do I get my certificate?",
+    a: "Instantly. The moment your M-Pesa payment confirms, your IRA-compliant certificate of insurance is generated and delivered to your email and phone. No waiting.",
+  },
+  {
+    q: "Which insurance companies do you work with?",
+    a: "We partner exclusively with IRA-licensed insurers rated A or above for financial strength. At launch, we'll have multiple carriers available so you can compare prices and choose.",
+  },
+  {
+    q: "What vehicles can I insure?",
+    a: "At launch, we're focused on private passenger vehicles registered in Kenya. We plan to expand to commercial and fleet vehicles in 2027.",
+  },
+  {
+    q: "Do you store my payment information?",
+    a: "No. We never store your M-Pesa PIN or payment credentials. All transactions are processed through Safaricom's and Airtel's secure payment infrastructure.",
+  },
+  {
+    q: "What if I need to make a claim?",
+    a: "You'll deal directly with your insurer for claims — the same process as any other policy. We'll give you all the carrier contact details in your policy documents, and we're building a claims-tracking feature for 2027.",
   },
 ];
 
-function FAQItem({ item, globalIndex }) {
-  const [open, setOpen] = useState(false);
-  const ref = useReveal(globalIndex * 40);
+export default function FAQPage() {
+  const { isMobile } = useBreakpoint();
+  const ref0 = useReveal(0);
+  const [open, setOpen] = useState(null);
 
   return (
-    <div
-      ref={ref}
-      className="reveal"
-      style={{
-        borderBottom: "1px solid var(--border)",
-      }}
-    >
-      <button
-        onClick={() => setOpen(!open)}
-        style={{
-          width: "100%", textAlign: "left",
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: "24px 0",
-          background: "none", border: "none", color: "var(--text)",
-          gap: 20,
-        }}
-      >
-        <span style={{
-          fontSize: 15, fontWeight: 600, lineHeight: 1.4,
-          fontFamily: "'Cabin', sans-serif",
-        }}>
-          {item.q}
-        </span>
-        <span style={{
-          flexShrink: 0, width: 28, height: 28,
-          border: "1px solid var(--border)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          transition: "transform 0.3s ease, background 0.2s",
-          transform: open ? "rotate(45deg)" : "rotate(0deg)",
-          background: open ? "var(--gold)" : "transparent",
-          color: open ? "var(--dark)" : "var(--gold)",
-        }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-            <rect x="5" y="0" width="2" height="12" rx="1"/>
-            <rect x="0" y="5" width="12" height="2" rx="1"/>
-          </svg>
-        </span>
-      </button>
+    <div style={{ background: "#0a0907", minHeight: "100vh", paddingTop: 72 }}>
+      {/* Hero */}
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "60px 24px 48px" : "80px 48px 60px", textAlign: "center" }}>
+        <div ref={ref0} className="reveal">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 24 }}>
+            <div style={{ width: 36, height: 1, background: "#c9a55c" }} />
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, letterSpacing: 4, color: "#c9a55c", fontWeight: 600 }}>FAQ</span>
+            <div style={{ width: 36, height: 1, background: "#c9a55c" }} />
+          </div>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? 52 : 80, fontWeight: 400, color: "#f5f1e8", lineHeight: 1.1, marginBottom: 24 }}>
+            Questions,{" "}
+            <em style={{ color: "#c9a55c", fontStyle: "italic" }}>answered.</em>
+          </h1>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 17, color: "#b8b1a3", lineHeight: 1.7, maxWidth: 600, margin: "0 auto" }}>
+            The honest answers to what most people ask before they sign up.
+          </p>
+        </div>
+      </div>
 
-      <div className={`faq-answer ${open ? "open" : ""}`}>
-        <p style={{
-          fontSize: 13, color: "var(--text-muted)",
-          lineHeight: 1.85, paddingBottom: 24, paddingRight: 48,
-        }}>
-          {item.a}
-        </p>
+      {/* Accordion */}
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "0 24px 80px" : "0 48px 100px" }}>
+        {faqs.map((faq, i) => (
+          <div key={i} style={{ borderTop: "1px solid #2a2218" }}>
+            <button
+              onClick={() => setOpen(open === i ? null : i)}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                gap: 24,
+                padding: "28px 0",
+                background: open === i ? "linear-gradient(180deg, rgba(21,17,10,0.6) 0%, transparent 100%)" : "transparent",
+                border: "none",
+                cursor: "pointer",
+                textAlign: "left",
+              }}
+            >
+              <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 14, letterSpacing: 3, color: "#c9a55c", minWidth: 28, fontStyle: "italic" }}>
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span style={{ flex: 1, fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? 20 : 24, color: "#f5f1e8", fontWeight: 400 }}>
+                {faq.q}
+              </span>
+              <span
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 28,
+                  color: "#c9a55c",
+                  lineHeight: 1,
+                  transform: open === i ? "rotate(45deg)" : "none",
+                  transition: "transform 0.3s ease",
+                  display: "inline-block",
+                  minWidth: 28,
+                  textAlign: "center",
+                }}
+              >
+                +
+              </span>
+            </button>
+            <div className={`faq-answer${open === i ? " open" : ""}`}>
+              <p
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 15,
+                  color: "#b8b1a3",
+                  lineHeight: 1.75,
+                  paddingLeft: isMobile ? 0 : 70,
+                  paddingBottom: 28,
+                }}
+              >
+                {faq.a}
+              </p>
+            </div>
+          </div>
+        ))}
+        <div style={{ borderTop: "1px solid #2a2218" }} />
+
+        {/* Footer row */}
+        <div style={{ paddingTop: 48, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 20 }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: "#9b9485" }}>Still have a question?</span>
+          <a
+            href="mailto:hello@insurely.co.ke"
+            style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: "#c9a55c", textDecoration: "none" }}
+          >
+            Email us at hello@insurely.co.ke →
+          </a>
+        </div>
       </div>
     </div>
-  );
-}
-
-export default function FAQPage() {
-  const heroRef = useReveal();
-  let globalIndex = 0;
-
-  return (
-    <>
-      {/* ─── Hero ─── */}
-      <section style={{
-        background: "var(--dark)",
-        paddingTop: 160, paddingBottom: 100,
-        position: "relative", overflow: "hidden",
-      }}>
-        <div style={{
-          position: "absolute", top: 0, right: 0,
-          width: "50%", height: "100%",
-          background: "radial-gradient(ellipse 70% 70% at 80% 30%, rgba(212,168,83,0.05) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px" }}>
-          <div ref={heroRef} className="reveal">
-            <div style={{
-              fontSize: 10, fontWeight: 700, letterSpacing: 3,
-              textTransform: "uppercase", color: "var(--gold)", marginBottom: 28,
-            }}>
-              FAQ
-            </div>
-            <h1 style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(44px, 6vw, 78px)",
-              fontWeight: 600, color: "var(--text)",
-              lineHeight: 1.03, letterSpacing: -2,
-              maxWidth: 560,
-            }}>
-              Got questions?<br />
-              <em style={{ color: "var(--gold)", fontStyle: "italic" }}>We've got answers.</em>
-            </h1>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Questions ─── */}
-      <section style={{ padding: "80px 32px 140px", background: "var(--surface)" }}>
-        <div style={{ maxWidth: 860, margin: "0 auto" }}>
-          {faqs.map((cat, ci) => (
-            <div key={ci} style={{ marginBottom: 64 }}>
-              <div style={{
-                fontSize: 10, fontWeight: 700, letterSpacing: 3,
-                textTransform: "uppercase", color: "var(--gold)",
-                marginBottom: 8, paddingBottom: 20,
-                borderBottom: "1px solid var(--border)",
-              }}>
-                {cat.cat}
-              </div>
-              {cat.items.map((item, ii) => {
-                const idx = globalIndex++;
-                return <FAQItem key={ii} item={item} globalIndex={idx} />;
-              })}
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
   );
 }

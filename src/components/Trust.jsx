@@ -1,135 +1,131 @@
 import { useReveal } from "../hooks/useReveal";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 
-const badges = [
+const pillars = [
   {
-    icon: "shield",
-    label: "IRA regulated",
-    sub: "Licensed digital insurance agency under the Insurance Regulatory Authority of Kenya.",
+    mark: "IRA",
+    index: "01",
+    title: "IRA Regulated",
+    copy: "Insurely operates under the Insurance Regulatory Authority of Kenya. Every carrier on our platform is licensed. Your policy is real.",
   },
   {
-    icon: "lock",
-    label: "Bank-grade security",
-    sub: "256-bit encryption on all data. Your information is never sold or shared.",
+    mark: "256",
+    index: "02",
+    title: "Bank-grade security",
+    copy: "256-bit encryption protects every transaction. Your personal and payment data is never stored on our servers.",
   },
   {
-    icon: "users",
-    label: "Top-rated carriers",
-    sub: "Partnered with Kenya's leading, fully licensed insurance companies.",
+    mark: "A+",
+    index: "03",
+    title: "Top-rated carriers",
+    copy: "We only partner with IRA-licensed insurers rated A or above. No fringe underwriters — only institutions that pay claims.",
   },
   {
-    icon: "zap",
-    label: "Instant bind",
-    sub: "Real-time policy issuance the moment your M-Pesa payment is confirmed.",
+    mark: "0:00",
+    index: "04",
+    title: "Instant bind",
+    copy: "Your certificate is issued the moment your M-Pesa payment clears. No waiting, no callbacks, no paperwork.",
   },
 ];
 
-function TrustIcon({ name }) {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D4A853" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-      {name === "shield" && <><path d="M12 2l8 4v6c0 5.5-3.8 10-8 11-4.2-1-8-5.5-8-11V6l8-4z"/><path d="M9 12l2 2 4-4"/></>}
-      {name === "lock"  && <><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></>}
-      {name === "users" && <><circle cx="9" cy="7" r="3"/><circle cx="17" cy="7" r="2.5"/><path d="M2 21v-2a5 5 0 0110 0v2"/><path d="M14 21v-2a4 4 0 016 0v2"/></>}
-      {name === "zap"   && <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>}
-    </svg>
-  );
-}
-
-function Badge({ b, i }) {
-  const ref = useReveal(i * 80);
-  const { isMobile, isTablet } = useBreakpoint();
-
-  // On mobile: 1 col, on tablet: 2 col, on desktop: 4 col
-  const isLastInRow = isMobile
-    ? true
-    : isTablet
-      ? i % 2 === 1
-      : i === 3;
-  const isLast = i === badges.length - 1;
-
-  return (
-    <div ref={ref} className="reveal" style={{
-      flex: isMobile ? "1 1 100%" : isTablet ? "1 1 calc(50% - 1px)" : 1,
-      minWidth: isMobile ? "100%" : isTablet ? "calc(50% - 1px)" : 220,
-      padding: isMobile ? "32px 20px" : "40px 32px",
-      background: "var(--cream)",
-      borderRight: isLastInRow ? "none" : "1px solid rgba(26,22,18,0.1)",
-      borderBottom: isLast ? "none" : (isMobile || (isTablet && i >= 2)) ? "none" : isTablet && i < 2 ? "1px solid rgba(26,22,18,0.1)" : "none",
-    }}>
-      <div style={{
-        width: 48, height: 48,
-        background: "rgba(212,168,83,0.1)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        marginBottom: 20,
-      }}>
-        <TrustIcon name={b.icon} />
-      </div>
-      <h4 style={{
-        fontSize: 15, fontWeight: 700,
-        color: "var(--on-cream)", marginBottom: 10,
-        fontFamily: "'Cabin', sans-serif",
-      }}>
-        {b.label}
-      </h4>
-      <p style={{
-        fontSize: 12, color: "var(--on-cream-muted)",
-        lineHeight: 1.75,
-      }}>
-        {b.sub}
-      </p>
-    </div>
-  );
-}
-
 export default function Trust() {
-  const headerRef = useReveal();
   const { isMobile } = useBreakpoint();
+  const ref0 = useReveal(0);
+  const ref1 = useReveal(150);
 
   return (
-    <section style={{ background: "var(--cream)" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: isMobile ? "60px 20px 40px" : "100px 32px 60px" }}>
-        <div ref={headerRef} className="reveal" style={{
-          display: "flex",
-          alignItems: isMobile ? "flex-start" : "flex-end",
-          justifyContent: "space-between",
-          flexDirection: isMobile ? "column" : "row",
-          flexWrap: "wrap", gap: isMobile ? 16 : 24,
-        }}>
-          <div>
-            <div style={{
-              fontSize: 10, fontWeight: 700, letterSpacing: 3,
-              textTransform: "uppercase", color: "var(--on-cream)", opacity: 0.5, marginBottom: 20,
-            }}>
-              Why trust Insurely
-            </div>
-            <h2 style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: isMobile ? "clamp(32px, 8vw, 48px)" : "clamp(38px, 5vw, 58px)",
-              fontWeight: 600, color: "var(--on-cream)",
-              lineHeight: 1.05, letterSpacing: -1,
-            }}>
-              Built on trust,<br />powered by technology.
-            </h2>
+    <section style={{ background: "#0a0907", padding: isMobile ? "60px 24px" : "80px 48px", borderTop: "1px solid #2a2218" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        {/* Header */}
+        <div ref={ref0} className="reveal" style={{ textAlign: "center", marginBottom: isMobile ? 48 : 64 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 24 }}>
+            <div style={{ width: 36, height: 1, background: "#c9a55c" }} />
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, letterSpacing: 4, color: "#c9a55c", fontWeight: 600 }}>WHY TRUST INSURELY</span>
+            <div style={{ width: 36, height: 1, background: "#c9a55c" }} />
           </div>
-          <p style={{
-            maxWidth: isMobile ? "100%" : 260,
-            fontSize: 13, color: "var(--on-cream-muted)",
-            lineHeight: 1.85, marginBottom: 4,
-          }}>
-            Every policy issued through Insurely is underwritten by a regulated carrier and fully compliant with Kenyan insurance law.
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? 44 : 64, fontWeight: 400, color: "#f5f1e8", lineHeight: 1.1, marginBottom: 20 }}>
+            Built on trust,{" "}
+            <em style={{ color: "#c9a55c", fontStyle: "italic" }}>powered by technology.</em>
+          </h2>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: "#b8b1a3", maxWidth: 720, margin: "0 auto", lineHeight: 1.7 }}>
+            Every decision we've made — from our carrier partners to our payment flow — is designed to give you confidence.
           </p>
         </div>
-      </div>
 
-      <div style={{
-        maxWidth: 1200, margin: "0 auto",
-        display: "flex", flexWrap: "wrap",
-        borderTop: "1px solid rgba(26,22,18,0.1)",
-      }}>
-        {badges.map((b, i) => <Badge key={i} b={b} i={i} />)}
-      </div>
+        {/* Pillars grid */}
+        <div
+          ref={ref1}
+          className="reveal"
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+            borderTop: "1px solid #2a2218",
+          }}
+        >
+          {pillars.map((p, i) => (
+            <div
+              key={p.index}
+              style={{
+                padding: isMobile ? "32px 20px" : "40px 32px",
+                borderRight: i < pillars.length - 1 ? "1px solid #2a2218" : "none",
+                position: "relative",
+              }}
+            >
+              {/* Index top right */}
+              <div style={{ position: "absolute", top: 20, right: 20, fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: 2, color: "#3a2f1c" }}>
+                {p.index}
+              </div>
 
-      <div style={{ height: isMobile ? 60 : 100 }} />
+              {/* Ring */}
+              <div
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  border: "1px solid #c9a55c",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 24,
+                }}
+              >
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, color: "#c9a55c", letterSpacing: 1 }}>{p.mark}</span>
+              </div>
+
+              <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: "#f5f1e8", marginBottom: 12, lineHeight: 1.2 }}>
+                {p.title}
+              </h3>
+              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: "#9b9485", lineHeight: 1.7 }}>{p.copy}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Proof strip */}
+        <div
+          style={{
+            marginTop: 48,
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: isMobile ? 20 : 40,
+            padding: "24px 0",
+            borderTop: "1px solid #2a2218",
+            borderBottom: "1px solid #2a2218",
+          }}
+        >
+          <div style={{ textAlign: "center" }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: 3, color: "#7a7261" }}>REGULATOR</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#b8b1a3", marginLeft: 12 }}>Insurance Regulatory Authority of Kenya</span>
+          </div>
+          <div style={{ width: 1, height: 24, background: "#2a2218" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: 3, color: "#7a7261" }}>LICENSE STATUS</span>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#7ec48c", display: "inline-block", boxShadow: "0 0 8px #7ec48c" }} />
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#b8b1a3" }}>Licensed by IRA</span>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
