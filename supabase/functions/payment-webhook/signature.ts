@@ -18,7 +18,7 @@ export interface SignatureVerificationResult {
 function hexToBytes(hex: string): Uint8Array | null {
   if (hex.length === 0 || hex.length % 2 !== 0) return null;
   if (!/^[0-9a-f]+$/.test(hex)) return null;
-  const bytes = new Uint8Array(hex.length / 2);
+  const bytes = new Uint8Array(new ArrayBuffer(hex.length / 2));
   for (let i = 0; i < hex.length; i += 2) {
     bytes[i / 2] = parseInt(hex.slice(i, i + 2), 16);
   }
@@ -82,7 +82,12 @@ export async function verifyWebhookSignature(
   }
 
   // crypto.subtle.verify with HMAC is constant-time by the Web Crypto spec.
-  const valid = await crypto.subtle.verify("HMAC", key, expectedBytes, rawBody);
+  const valid = await crypto.subtle.verify(
+    "HMAC",
+    key,
+    expectedBytes as unknown as ArrayBuffer,
+    rawBody as unknown as ArrayBuffer,
+  );
 
   if (!valid) {
     return {
