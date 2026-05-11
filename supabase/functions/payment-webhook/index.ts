@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { writeAuditEvent } from "../_shared/audit.ts";
 import { buildReconEntry, writeReconLog } from "../_shared/reconciliation.ts";
 import { generateIdempotencyKey, scopedKey } from "../_shared/idempotency.ts";
+import { verifyWebhookSignature, SIGNATURE_HEADER } from "./signature.ts";
 import type { PaymentWebhookPayload } from "../_shared/types.ts";
 
 const SYSTEM_VERSION = "1.0.0";
@@ -74,9 +75,40 @@ if (import.meta.main) Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
   }
 
+  // Read raw bytes first — signature must be verified against the original body
+  // before any JSON parsing. Parsing first would allow formatting attacks.
+  let rawBody: Uint8Array;
+  try {
+    rawBody = new Uint8Array(await req.arrayBuffer());
+  } catch {
+    return new Response(JSON.stringify({ error: "Failed to read request body" }), { status: 400 });
+  }
+
+  // ── SIGNATURE VERIFICATION ── must happen before any business logic ──────
+  const sigResult = await verifyWebhookSignature(
+    rawBody,
+    req.headers.get(SIGNATURE_HEADER),
+    Deno.env.get("PAYMENT_WEBHOOK_SECRET"),
+  );
+
+  if (!sigResult.valid) {
+    // Safe log: timestamp, source IP, reason only — no payload, no secret.
+    console.warn("Webhook signature verification failed", {
+      timestamp: new Date().toISOString(),
+      source: req.headers.get("x-forwarded-for") ?? "unknown",
+      reason: sigResult.error,
+      request_id: requestId,
+    });
+    return new Response(
+      JSON.stringify({ error: sigResult.error }),
+      { status: sigResult.statusCode ?? 401 },
+    );
+  }
+  // ── END SIGNATURE VERIFICATION ────────────────────────────────────────────
+
   let body: unknown;
   try {
-    body = await req.json();
+    body = JSON.parse(new TextDecoder().decode(rawBody));
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400 });
   }
