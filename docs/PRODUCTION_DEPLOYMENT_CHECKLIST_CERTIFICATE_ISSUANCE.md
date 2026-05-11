@@ -29,7 +29,19 @@
 - [ ] `RESEND_API_KEY` — Resend API key for `hello@insurely.co.ke` sender domain
 - [ ] Insurer adapter sandbox credentials configured (insurer-specific env vars)
 - [ ] DMVIC sandbox credentials configured (DMVIC stub endpoint or real sandbox)
-- [ ] Payment processor webhook secret configured for signature verification
+- [ ] `PAYMENT_WEBHOOK_SECRET` configured in Supabase Edge Function secrets
+  - **Purpose:** Shared secret used to verify HMAC-SHA256 signatures on incoming payment webhook requests. Proves the request originated from the payment processor and that the body was not tampered with.
+  - **Required for:** `payment-webhook` Edge Function
+  - **Environment:** Required in both sandbox and production
+  - **Format:** Cryptographically random string, minimum 32 bytes (256-bit entropy recommended). Generate with: `openssl rand -hex 32`
+  - **Sensitivity:** SECRET — never commit the actual value to source control; set via Supabase dashboard → Edge Functions → Secrets, or via `supabase secrets set PAYMENT_WEBHOOK_SECRET=<value>`
+  - **Deployment rule:** `payment-webhook` must not be exposed to the internet unless `PAYMENT_WEBHOOK_SECRET` is configured. A missing secret causes every webhook request to return a controlled HTTP 500 (no payment is processed).
+  - **Rotation:** Changing the secret must be coordinated with the payment processor. Both sides must switch atomically; any in-flight signed request from the old secret will be rejected after rotation.
+  - **Failure behavior:**
+    - Missing `PAYMENT_WEBHOOK_SECRET` → HTTP 500 (config error, no payment written)
+    - Missing or invalid `X-Webhook-Signature` header → HTTP 401 (no payment written)
+    - Tampered body → HTTP 401 (HMAC mismatch, no payment written)
+  - **Security scope:** HMAC verifies authenticity (request came from a holder of the secret) and integrity (body was not modified in transit). Replay protection is currently handled by `payment_reference` idempotency — a replayed valid signed request for an existing reference returns HTTP 200 without writing a duplicate payment row. Timestamp-bound nonce replay protection is tracked as a follow-up hardening item.
 
 ---
 
