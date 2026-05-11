@@ -5,6 +5,7 @@ import { validateWebhookPayload, buildPaymentRecord } from "./index.ts";
 Deno.test("validateWebhookPayload accepts a valid confirmed payload", () => {
   const payload = {
     payment_reference: "MP-REF-001",
+    quote_id: "quote-abc-001",
     status: "confirmed",
     amount_kes: 45000,
     customer_id: "cust-123",
@@ -19,6 +20,7 @@ Deno.test("validateWebhookPayload accepts a valid confirmed payload", () => {
 
 Deno.test("validateWebhookPayload rejects payload missing payment_reference", () => {
   const payload = {
+    quote_id: "quote-abc-001",
     status: "confirmed",
     amount_kes: 45000,
     customer_id: "cust-123",
@@ -35,6 +37,7 @@ Deno.test("validateWebhookPayload rejects payload missing payment_reference", ()
 Deno.test("validateWebhookPayload rejects payload with zero or negative amount", () => {
   const payload = {
     payment_reference: "MP-REF-002",
+    quote_id: "quote-abc-001",
     status: "confirmed",
     amount_kes: 0,
     customer_id: "cust-123",
@@ -50,6 +53,7 @@ Deno.test("validateWebhookPayload rejects payload with zero or negative amount",
 Deno.test("buildPaymentRecord sets status to confirmed and includes confirmed_at", () => {
   const payload = {
     payment_reference: "MP-REF-003",
+    quote_id: "quote-abc-001",
     status: "confirmed" as const,
     amount_kes: 12000,
     customer_id: "cust-456" as any,
@@ -67,6 +71,7 @@ Deno.test("buildPaymentRecord sets status to confirmed and includes confirmed_at
 Deno.test("buildPaymentRecord sets confirmed_at to null for failed status", () => {
   const payload = {
     payment_reference: "MP-REF-004",
+    quote_id: "quote-abc-001",
     status: "failed" as const,
     amount_kes: 12000,
     customer_id: "cust-789" as any,
@@ -83,6 +88,7 @@ Deno.test("buildPaymentRecord sets confirmed_at to null for failed status", () =
 Deno.test("validateWebhookPayload accepts a valid failed payload without confirmed_at", () => {
   const payload = {
     payment_reference: "MP-REF-005",
+    quote_id: "quote-abc-001",
     status: "failed",
     amount_kes: 12000,
     customer_id: "cust-123",
@@ -97,6 +103,7 @@ Deno.test("validateWebhookPayload accepts a valid failed payload without confirm
 Deno.test("validateWebhookPayload rejects invalid processor value", () => {
   const payload = {
     payment_reference: "MP-REF-006",
+    quote_id: "quote-abc-001",
     status: "confirmed",
     amount_kes: 12000,
     customer_id: "cust-123",
@@ -107,4 +114,22 @@ Deno.test("validateWebhookPayload rejects invalid processor value", () => {
   };
   const result = validateWebhookPayload(payload);
   assertEquals(result.valid, false);
+});
+
+// Fix 3: quote_id is required — missing it must reject before any DB write.
+Deno.test("validateWebhookPayload rejects payload missing quote_id", () => {
+  const payload = {
+    payment_reference: "MP-REF-007",
+    // quote_id intentionally omitted
+    status: "confirmed",
+    amount_kes: 12000,
+    customer_id: "cust-123",
+    session_id: "sess-abc",
+    processor: "mpesa",
+    confirmed_at: "2026-06-01T11:00:00.000Z",
+    ip_address: null,
+  };
+  const result = validateWebhookPayload(payload);
+  assertEquals(result.valid, false);
+  assertEquals(result.error?.includes("quote_id"), true);
 });

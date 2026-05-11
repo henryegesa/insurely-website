@@ -257,12 +257,45 @@ export async function issueCertificateForPayment(
   let dmvicReconStatus: "success" | "error" | "timeout" = "success";
   let dmvicReconBody: Record<string, unknown> | null = null;
 
+  // Fix 2: insurer_ira_license lives in insurer_response jsonb — the policies
+  // table has no top-level column for it. Extract it before calling DMVIC.
+  const insurerIraLicense: string = policy.insurer_response?.insurer_ira_license ?? "";
+
+  if (!insurerIraLicense) {
+    await recon(supabase, await buildReconEntry({
+      integration_name: "dmvic",
+      operation_type: "issue_certificate",
+      idempotency_key: certIdempotencyKey,
+      related_entity_type: "policy",
+      related_entity_id: policy.id,
+      request_payload: { policy_id: policy.id },
+      response_status: "error",
+      response_body: { error: "insurer_ira_license missing from policy response" },
+      latency_ms: 0,
+    }));
+
+    await audit(supabase, {
+      event_type: "certificate_failed",
+      actor: "system",
+      customer_id: payment.customer_id,
+      request_id: requestId,
+      entity_type: "policy",
+      entity_id: policy.id,
+      before_state: null,
+      after_state: { error: "insurer_ira_license missing from policy response" },
+      system_version: SYSTEM_VERSION,
+      ip_address: null,
+    });
+
+    return { success: false, error: "insurer_ira_license missing — cannot issue DMVIC certificate" };
+  }
+
   try {
     dmvicResponse = await dmvic.issueCertificate({
       idempotency_key: certIdempotencyKey,
       policy_reference: policy.policy_reference,
       insurer_id: policy.insurer_id,
-      insurer_ira_license: policy.insurer_ira_license ?? "",
+      insurer_ira_license: insurerIraLicense,
       customer_id: payment.customer_id,
       customer_name: payment.customer_name ?? "Customer",
       vehicle_registration: payment.vehicle_registration ?? "",
@@ -323,7 +356,7 @@ export async function issueCertificateForPayment(
     policyResponse: {
       policy_reference: policy.policy_reference,
       insurer_id: policy.insurer_id,
-      insurer_ira_license: policy.insurer_ira_license ?? "",
+      insurer_ira_license: policy.insurer_response?.insurer_ira_license ?? "",
       status: "active",
       issued_at: policy.created_at,
     },
@@ -363,14 +396,26 @@ export async function issueCertificateForPayment(
     ip_address: null,
   });
 
-  await supabase.functions.invoke("send-certificate-email", {
-    body: {
-      certificate_id: certificate.id,
-      customer_id: payment.customer_id,
-      download_url: dmvicResponse.download_url,
-      certificate_number: dmvicResponse.certificate_number,
-    },
-  });
+  // Fix 4: email delivery is deliberately decoupled from certificate issuance.
+  // A failure here must NOT roll back the issued certificate — the certificate
+  // is already recorded and audited. The send-certificate-email function writes
+  // its own reconciliation log and audit event on failure, providing full
+  // observability without coupling issuance success to email delivery success.
+  try {
+    const emailResult = await supabase.functions.invoke("send-certificate-email", {
+      body: {
+        certificate_id: certificate.id,
+        customer_id: payment.customer_id,
+        download_url: dmvicResponse.download_url,
+        certificate_number: dmvicResponse.certificate_number,
+      },
+    });
+    if (emailResult?.error) {
+      console.error(`[certificate:${certificate.id}] Email delivery failed (non-fatal):`, emailResult.error);
+    }
+  } catch (emailErr) {
+    console.error(`[certificate:${certificate.id}] Email invoke threw (non-fatal):`, emailErr);
+  }
 
   return { success: true, certificateId: certificate.id };
 }

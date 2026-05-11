@@ -11,6 +11,16 @@ const recon = writeReconLog as (db: any, entry: any) => Promise<void>;
 const SYSTEM_VERSION = "1.0.0";
 const FROM_ADDRESS = "Insurely <hello@insurely.co.ke>";
 
+// Fix 5c: escape user-supplied values before interpolating into HTML to prevent
+// XSS via certificate fields sourced from external APIs or user input.
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 interface CertificateEmailData {
   customerName: string;
   certificateNumber: string;
@@ -21,24 +31,30 @@ interface CertificateEmailData {
 }
 
 export function buildCertificateEmailHtml(data: CertificateEmailData): string {
+  const name = escapeHtml(data.customerName);
+  const certNum = escapeHtml(data.certificateNumber);
+  const vehicleReg = escapeHtml(data.vehicleRegistration);
+  const startDate = escapeHtml(data.coverStartDate);
+  const endDate = escapeHtml(data.coverEndDate);
+  const dlUrl = escapeHtml(data.downloadUrl);
   return `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
 <body style="font-family: Arial, sans-serif; color: #222; max-width: 600px; margin: 0 auto; padding: 24px;">
   <h2 style="color: #c9a55c;">Your Insurance Certificate is Ready</h2>
-  <p>Dear ${data.customerName},</p>
+  <p>Dear ${name},</p>
   <p>Your motor insurance certificate has been issued. Details below:</p>
   <table style="border-collapse: collapse; width: 100%;">
     <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Certificate Number</td>
-        <td style="padding: 8px; border: 1px solid #ddd;">${data.certificateNumber}</td></tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">${certNum}</td></tr>
     <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Vehicle Registration</td>
-        <td style="padding: 8px; border: 1px solid #ddd;">${data.vehicleRegistration}</td></tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">${vehicleReg}</td></tr>
     <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Cover Period</td>
-        <td style="padding: 8px; border: 1px solid #ddd;">${data.coverStartDate} to ${data.coverEndDate}</td></tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">${startDate} to ${endDate}</td></tr>
   </table>
   <p style="margin-top: 24px;">
-    <a href="${data.downloadUrl}"
+    <a href="${dlUrl}"
        style="background: #c9a55c; color: #0a0907; padding: 12px 24px; text-decoration: none; font-weight: bold; display: inline-block;">
       Download Certificate (PDF)
     </a>
@@ -55,6 +71,11 @@ export function buildCertificateEmailHtml(data: CertificateEmailData): string {
 if (import.meta.main) Deno.serve(async (req: Request) => {
   const requestId = crypto.randomUUID();
   const { certificate_id, customer_id, download_url, certificate_number } = await req.json();
+
+  // Fix 5b: validate required fields before any DB/email operation.
+  if (!certificate_id || !customer_id || !download_url || !certificate_number) {
+    return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
+  }
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,

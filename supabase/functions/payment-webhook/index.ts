@@ -29,6 +29,11 @@ export function validateWebhookPayload(raw: unknown): ValidationResult {
   if (!p.session_id || typeof p.session_id !== "string") {
     return { valid: false, error: "session_id is required" };
   }
+  // Fix 3: quote_id is NOT NULL uuid in the payments table — require it in the
+  // webhook payload so the 400 fires before any DB write.
+  if (!p.quote_id || typeof p.quote_id !== "string") {
+    return { valid: false, error: "quote_id is required" };
+  }
   if (p.processor !== "mpesa" && p.processor !== "card") {
     return { valid: false, error: "processor must be mpesa or card" };
   }
@@ -101,7 +106,8 @@ if (import.meta.main) Deno.serve(async (req: Request) => {
   }
 
   const idempotencyKey = generateIdempotencyKey();
-  const quoteId = (payload as unknown as Record<string, unknown>).quote_id as string ?? "";
+  // quote_id is validated non-empty by validateWebhookPayload above.
+  const quoteId = (payload as unknown as Record<string, unknown>).quote_id as string;
   const paymentRecord = buildPaymentRecord(payload, idempotencyKey, quoteId);
 
   const { data: payment, error: paymentError } = await supabase
@@ -115,6 +121,9 @@ if (import.meta.main) Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ error: "Payment record creation failed" }), { status: 500 });
   }
 
+  // Fix 5a: ip_address is already a first-class audit field — exclude it from
+  // after_state to avoid duplication.
+  const { ip_address: _ip, ...auditState } = paymentRecord;
   await writeAuditEvent(supabase as any, {
     event_type: payload.status === "confirmed" ? "payment_confirmed" : "payment_failed",
     actor: "system",
@@ -123,7 +132,7 @@ if (import.meta.main) Deno.serve(async (req: Request) => {
     entity_type: "payment",
     entity_id: payment.id,
     before_state: null,
-    after_state: paymentRecord,
+    after_state: auditState,
     system_version: SYSTEM_VERSION,
     ip_address: payload.ip_address,
   });

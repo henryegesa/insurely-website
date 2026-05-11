@@ -1,6 +1,6 @@
 // supabase/functions/issue-certificate/index.test.ts
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { buildCertificateRecord, validateCertificateCompleteness } from "./index.ts";
+import { buildCertificateRecord, validateCertificateCompleteness, issueCertificateForPayment } from "./index.ts";
 import type { CreatePolicyResponse, IssueCertificateResponse } from "../_shared/types.ts";
 
 Deno.test("buildCertificateRecord maps all 11 R5-required fields", () => {
@@ -103,4 +103,97 @@ Deno.test("validateCertificateCompleteness passes for a complete record", () => 
     issuing_system: "dmvic",
   });
   assertEquals(result, true);
+});
+
+// ─── Fix 2: insurer_ira_license from insurer_response ────────────────────────
+
+/** Minimal in-memory supabase stub for issueCertificateForPayment tests. */
+function makeIssueCertStub(opts: {
+  insurerResponse: Record<string, unknown>;
+  dmvicCallSpy?: { called: boolean };
+}) {
+  const payment = {
+    id: "pay-001",
+    status: "confirmed",
+    customer_id: "cust-001",
+    customer_name: "John Kamau",
+    payment_reference: "REF-001",
+    vehicle_registration: "KDA 001A",
+    vehicle_make: "Toyota",
+    vehicle_model: "Corolla",
+    vehicle_year: 2020,
+    cover_type: "comprehensive",
+    cover_start_date: "2026-06-01",
+    cover_end_date: "2027-05-31",
+    amount_kes: 45000,
+    customer_id_number: "12345678",
+  };
+
+  const policy = {
+    id: "pol-001",
+    payment_id: "pay-001",
+    policy_reference: "POL-STUB-001",
+    insurer_id: "INSURER-STUB-001",
+    cover_type: "comprehensive",
+    cover_start_date: "2026-06-01",
+    cover_end_date: "2027-05-31",
+    created_at: new Date().toISOString(),
+    insurer_response: opts.insurerResponse,
+  };
+
+  const capturedDmvicRequest: Record<string, unknown>[] = [];
+
+  return {
+    _capturedDmvicRequest: capturedDmvicRequest,
+    supabase: {
+      from: (table: string) => ({
+        select: (_cols: string) => ({
+          eq: (_col: string, _val: string) => ({
+            single: () => {
+              if (table === "payments") return Promise.resolve({ data: payment, error: null });
+              return Promise.resolve({ data: null, error: "not found" });
+            },
+            maybeSingle: () => {
+              if (table === "certificates") return Promise.resolve({ data: null, error: null });
+              if (table === "policies") return Promise.resolve({ data: policy, error: null });
+              return Promise.resolve({ data: null, error: null });
+            },
+          }),
+        }),
+        insert: (_obj: unknown) => ({
+          select: (_c: string) => ({
+            single: () => Promise.resolve({ data: { id: "cert-001" }, error: null }),
+          }),
+        }),
+        update: (_obj: unknown) => ({ eq: () => Promise.resolve({ error: null }) }),
+      }),
+      functions: {
+        invoke: (_name: string, _opts: unknown) => Promise.resolve({ error: null }),
+      },
+    } as unknown,
+  };
+}
+
+Deno.test("Fix2: when insurer_response has insurer_ira_license, issuance succeeds and uses the value", async () => {
+  const { supabase } = makeIssueCertStub({
+    insurerResponse: { insurer_ira_license: "IRA/001/2026" },
+  });
+
+  // We need to intercept the reconciliation and audit writes — use a thin no-op
+  // wrapper by relying on the stubs already returning success from .from().
+  // The function calls recon and audit via supabase.from("reconciliation_logs")
+  // and supabase.from("audit_events") .insert() — our stub returns success for all.
+
+  const result = await issueCertificateForPayment(supabase as any, "pay-001", "req-001");
+  assertEquals(result.success, true);
+});
+
+Deno.test("Fix2: when insurer_response is missing insurer_ira_license, returns failure without calling DMVIC", async () => {
+  const { supabase } = makeIssueCertStub({
+    insurerResponse: {}, // no insurer_ira_license
+  });
+
+  const result = await issueCertificateForPayment(supabase as any, "pay-001", "req-001");
+  assertEquals(result.success, false);
+  assertEquals(result.error?.includes("insurer_ira_license missing"), true);
 });

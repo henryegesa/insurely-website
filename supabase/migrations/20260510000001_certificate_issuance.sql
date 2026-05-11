@@ -129,3 +129,25 @@ create index if not exists audit_events_occurred_idx    on audit_events (occurre
 create index if not exists recon_logs_integration_idx   on reconciliation_logs (integration_name, occurred_at);
 create index if not exists recon_logs_idempotency_idx   on reconciliation_logs (idempotency_key);
 create index if not exists cert_queue_status_idx        on certificate_queue (status, next_attempt_at);
+
+-- ─── ATOMIC QUEUE CLAIM (Fix 1: race-condition-free claim) ───────────────────
+-- Uses FOR UPDATE SKIP LOCKED so concurrent invocations never claim the same row.
+-- Satisfies: R6 (no concurrent double-issuance), R10 (status transition is atomic).
+create or replace function claim_next_certificate_queue_entry()
+returns setof certificate_queue
+language sql
+as $$
+  update certificate_queue
+  set status = 'processing',
+      last_attempted_at = now()
+  where id = (
+    select id
+    from certificate_queue
+    where status = 'pending'
+      and next_attempt_at <= now()
+    order by next_attempt_at asc, created_at asc
+    for update skip locked
+    limit 1
+  )
+  returning *;
+$$;

@@ -172,6 +172,7 @@ export interface IssueCertificateResponse {
 // ─── PAYMENT WEBHOOK PAYLOAD ─────────────────────────────────────────────────
 export interface PaymentWebhookPayload {
   payment_reference: string;  // processor-issued reference
+  quote_id: string;           // required: maps to NOT NULL uuid payments.quote_id
   status: "confirmed" | "failed";
   amount_kes: number;
   customer_id: Uuid;
