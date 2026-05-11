@@ -12,7 +12,14 @@ export default function Nav({ page, setPage }) {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const links = ["Home", "About", "FAQ"];
+  const links = [
+    { label: "Home", page: "Home" },
+    { label: "Motor Insurance", page: "Motor" },
+    { label: "Partners", page: "Partners" },
+    { label: "About", page: "About" },
+    { label: "FAQ", page: "FAQ" },
+    { label: "Contact", page: "Contact" },
+  ];
 
   return (
     <>
@@ -57,24 +64,43 @@ export default function Nav({ page, setPage }) {
             ☰
           </button>
         ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
             {links.map((l) => (
               <span
-                key={l}
-                onClick={() => setPage(l)}
+                key={l.page}
+                onClick={() => setPage(l.page)}
                 className="nav-link"
                 style={{
                   fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  letterSpacing: 3,
+                  fontSize: 11,
+                  letterSpacing: 2,
                   fontWeight: 500,
-                  color: page === l ? "#c9a55c" : "#f5f1e8",
+                  color: page === l.page ? "#c9a55c" : "#f5f1e8",
                   textTransform: "uppercase",
+                  cursor: "pointer",
                 }}
               >
-                {l}
+                {l.label}
               </span>
             ))}
+            <button
+              onClick={() => setPage("Quote")}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 11,
+                letterSpacing: 2,
+                fontWeight: 700,
+                color: "#0a0907",
+                background: "#c9a55c",
+                border: "none",
+                padding: "10px 20px",
+                cursor: "pointer",
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+              }}
+            >
+              GET A QUOTE
+            </button>
           </div>
         )}
       </nav>
@@ -109,37 +135,37 @@ export default function Nav({ page, setPage }) {
           </span>
           {links.map((l) => (
             <span
-              key={l}
-              onClick={() => { setPage(l); setMenuOpen(false); }}
+              key={l.page}
+              onClick={() => { setPage(l.page); setMenuOpen(false); }}
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontSize: 14,
                 letterSpacing: 4,
                 fontWeight: 500,
-                color: page === l ? "#c9a55c" : "#f5f1e8",
+                color: page === l.page ? "#c9a55c" : "#f5f1e8",
                 textTransform: "uppercase",
                 cursor: "pointer",
               }}
             >
-              {l}
+              {l.label}
             </span>
           ))}
           <button
-            onClick={() => { setPage("Home"); setMenuOpen(false); }}
+            onClick={() => { setPage("Quote"); setMenuOpen(false); }}
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: 12,
               letterSpacing: 3,
-              fontWeight: 500,
-              color: "#c9a55c",
-              border: "1px solid #c9a55c",
-              background: "transparent",
+              fontWeight: 700,
+              color: "#0a0907",
+              background: "#c9a55c",
+              border: "none",
               padding: "14px 32px",
               textTransform: "uppercase",
               cursor: "pointer",
             }}
           >
-            JOIN WAITLIST
+            GET A QUOTE
           </button>
         </div>
       )}

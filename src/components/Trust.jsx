@@ -24,7 +24,7 @@ const pillars = [
     mark: "0:00",
     index: "04",
     title: "Instant bind",
-    copy: "Your certificate is issued the moment your M-Pesa payment clears. No waiting, no callbacks, no paperwork.",
+    copy: "At launch, your certificate will be issued the moment your M-Pesa payment clears — no waiting, no callbacks, no paperwork. Digital issuance is DMVIC-ready.",
   },
 ];
 

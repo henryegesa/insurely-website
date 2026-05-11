@@ -123,7 +123,7 @@ export default function Hero({ setPage }) {
 
           {/* Lede */}
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 14 : 16, lineHeight: 1.7, color: "#b8b1a3", marginBottom: isSmall ? 24 : 36, maxWidth: 480 }}>
-            We're building the fastest way to insure your car in Kenya. Quote, pay via M-Pesa or Airtel Money, drive covered — in under 3 minutes.
+            Kenya's digital insurance distribution platform. Compare cover from IRA-licensed insurers, request a quote online, and get your certificate delivered digitally — without the paperwork.
           </p>
 
           {/* Badges */}
@@ -372,7 +372,7 @@ export default function Hero({ setPage }) {
           overflow: "hidden",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", padding: isSmall ? "12px 16px" : isMobile ? "14px 20px" : "18px 48px", gap: isSmall ? 12 : 20 }}>
+        <div style={{ display: "flex", alignItems: "center", padding: isSmall ? "10px 16px 4px" : isMobile ? "12px 20px 4px" : "16px 48px 4px", gap: isSmall ? 12 : 20 }}>
           {!isSmall && (
             <>
               <span
@@ -386,7 +386,7 @@ export default function Hero({ setPage }) {
                   fontWeight: 600,
                 }}
               >
-                {isMobile ? "TOP CARRIERS" : "WORKING WITH KENYA'S TOP CARRIERS"}
+                {isMobile ? "INSURER PARTNERS" : "PARTNERING WITH KENYA'S LEADING CARRIERS"}
               </span>
               <div style={{ width: 1, height: 16, background: "#2a2218", flexShrink: 0 }} />
             </>
@@ -412,6 +412,12 @@ export default function Hero({ setPage }) {
               ))}
             </div>
           </div>
+        </div>
+        {/* Carrier disclaimer */}
+        <div style={{ padding: isSmall ? "4px 16px 10px" : isMobile ? "4px 20px 12px" : "4px 48px 14px" }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: "#3a2f1c" }}>
+            Insurer partnerships subject to agreement. All insurers on the platform will be IRA-licensed.
+          </span>
         </div>
       </div>
     </section>

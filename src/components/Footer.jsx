@@ -49,17 +49,29 @@ export default function Footer({ setPage }) {
             >
               INSURELY
             </span>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 13 : 14, color: "#7a7261", lineHeight: 1.7, maxWidth: 260 }}>
-              Private motor insurance, reimagined for Kenya. Quote, pay via M-Pesa, drive covered — in under 3 minutes.
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 13 : 14, color: "#7a7261", lineHeight: 1.7, maxWidth: 280 }}>
+              Kenya's digital insurance distribution platform. Compare cover from IRA-licensed insurers, pay via M-Pesa, and receive your certificate digitally.
             </p>
+            <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7ec48c", display: "inline-block" }} />
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#4a4235" }}>Launching Q3 2026</span>
+            </div>
+          </div>
+
+          {/* Products */}
+          <div>
+            <span style={labelStyle}>PRODUCTS</span>
+            <span style={linkStyle} onClick={() => setPage("Motor")}>Motor Insurance</span>
+            <span style={linkStyle} onClick={() => setPage("Quote")}>Get a Quote</span>
           </div>
 
           {/* Company */}
           <div>
             <span style={labelStyle}>COMPANY</span>
-            <span style={linkStyle} onClick={() => setPage("Home")}>Home</span>
             <span style={linkStyle} onClick={() => setPage("About")}>About</span>
+            <span style={linkStyle} onClick={() => setPage("Partners")}>Partners</span>
             <span style={linkStyle} onClick={() => setPage("FAQ")}>FAQ</span>
+            <span style={linkStyle} onClick={() => setPage("Contact")}>Contact</span>
           </div>
 
           {/* Legal */}
@@ -67,13 +79,8 @@ export default function Footer({ setPage }) {
             <span style={labelStyle}>LEGAL</span>
             <span style={linkStyle} onClick={() => setPage("Privacy")}>Privacy Policy</span>
             <span style={linkStyle} onClick={() => setPage("Terms")}>Terms of Service</span>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <span style={labelStyle}>CONTACT</span>
-            <a href="mailto:hello@insurely.co.ke" style={linkStyle}>hello@insurely.co.ke</a>
-            <span style={linkStyle}>Nairobi, Kenya</span>
+            <a href="mailto:hello@insurely.co.ke" style={{ ...linkStyle, textDecoration: "none" }}>hello@insurely.co.ke</a>
+            <span style={{ ...linkStyle, cursor: "default" }}>Nairobi, Kenya</span>
           </div>
         </div>
 
