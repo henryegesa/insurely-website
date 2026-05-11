@@ -63,3 +63,48 @@ Deno.test("buildPaymentRecord sets status to confirmed and includes confirmed_at
   assertEquals(record.confirmed_at, "2026-06-01T11:00:00.000Z");
   assertEquals(record.idempotency_key, "idem-001");
 });
+
+Deno.test("buildPaymentRecord sets confirmed_at to null for failed status", () => {
+  const payload = {
+    payment_reference: "MP-REF-004",
+    status: "failed" as const,
+    amount_kes: 12000,
+    customer_id: "cust-789" as any,
+    session_id: "sess-fail",
+    processor: "mpesa" as const,
+    confirmed_at: "2026-06-01T11:00:00.000Z",
+    ip_address: null,
+  };
+  const record = buildPaymentRecord(payload, "idem-002", "quote-789");
+  assertEquals(record.status, "failed");
+  assertEquals(record.confirmed_at, null);
+});
+
+Deno.test("validateWebhookPayload accepts a valid failed payload without confirmed_at", () => {
+  const payload = {
+    payment_reference: "MP-REF-005",
+    status: "failed",
+    amount_kes: 12000,
+    customer_id: "cust-123",
+    session_id: "sess-fail",
+    processor: "card",
+    ip_address: null,
+  };
+  const result = validateWebhookPayload(payload);
+  assertEquals(result.valid, true);
+});
+
+Deno.test("validateWebhookPayload rejects invalid processor value", () => {
+  const payload = {
+    payment_reference: "MP-REF-006",
+    status: "confirmed",
+    amount_kes: 12000,
+    customer_id: "cust-123",
+    session_id: "sess-abc",
+    processor: "bitcoin",
+    confirmed_at: "2026-06-01T11:00:00.000Z",
+    ip_address: null,
+  };
+  const result = validateWebhookPayload(payload);
+  assertEquals(result.valid, false);
+});

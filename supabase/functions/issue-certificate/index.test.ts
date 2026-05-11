@@ -49,8 +49,47 @@ Deno.test("validateCertificateCompleteness fails if certificate_number is empty"
   assertEquals(result, false);
 });
 
+Deno.test("validateCertificateCompleteness fails if premium_paid_kes is 0", () => {
+  const result = validateCertificateCompleteness({
+    policy_id: "pol-001",
+    payment_id: "pay-001",
+    certificate_number: "DMVIC-001",
+    insurer_id: "INS-001",
+    insurer_ira_license: "IRA/001/2026",
+    vehicle_registration: "KDA 001A",
+    cover_start_date: "2026-06-01",
+    cover_end_date: "2027-05-31",
+    premium_paid_kes: 0,
+    customer_id: "cust-123",
+    customer_name: "John Kamau",
+    issued_at: "2026-06-01T10:01:00.000Z",
+    issuing_system: "dmvic",
+  });
+  assertEquals(result, false);
+});
+
+Deno.test("validateCertificateCompleteness fails if policy_id is missing", () => {
+  const result = validateCertificateCompleteness({
+    payment_id: "pay-001",
+    certificate_number: "DMVIC-001",
+    insurer_id: "INS-001",
+    insurer_ira_license: "IRA/001/2026",
+    vehicle_registration: "KDA 001A",
+    cover_start_date: "2026-06-01",
+    cover_end_date: "2027-05-31",
+    premium_paid_kes: 45000,
+    customer_id: "cust-123",
+    customer_name: "John Kamau",
+    issued_at: "2026-06-01T10:01:00.000Z",
+    issuing_system: "dmvic",
+  });
+  assertEquals(result, false);
+});
+
 Deno.test("validateCertificateCompleteness passes for a complete record", () => {
   const result = validateCertificateCompleteness({
+    policy_id: "pol-uuid-001",
+    payment_id: "pay-uuid-001",
     certificate_number: "DMVIC-KDA001A-ABC123",
     insurer_id: "INS-001",
     insurer_ira_license: "IRA/001/2026",

@@ -52,12 +52,14 @@ export function buildCertificateRecord(input: BuildCertificateRecordInput) {
 
 export function validateCertificateCompleteness(record: Record<string, unknown>): boolean {
   const required = [
+    "policy_id", "payment_id",
     "certificate_number", "insurer_id", "insurer_ira_license",
     "vehicle_registration", "cover_start_date", "cover_end_date",
     "premium_paid_kes", "customer_id", "customer_name", "issued_at", "issuing_system",
   ];
   return required.every((f) => {
     const v = record[f];
+    if (typeof v === "number") return v !== 0;
     return v !== undefined && v !== null && v !== "";
   });
 }
@@ -156,6 +158,19 @@ export async function issueCertificateForPayment(
         latency_ms: Date.now() - policyStart,
       }));
 
+      await audit(supabase, {
+        event_type: "policy_failed",
+        actor: "system",
+        customer_id: payment.customer_id,
+        request_id: requestId,
+        entity_type: "payment",
+        entity_id: paymentId,
+        before_state: null,
+        after_state: { error: String(err) },
+        system_version: SYSTEM_VERSION,
+        ip_address: null,
+      });
+
       return { success: false, error: `Insurer API error: ${err}` };
     }
 
@@ -190,6 +205,18 @@ export async function issueCertificateForPayment(
       .single();
 
     if (policyInsertError || !newPolicy) {
+      await audit(supabase, {
+        event_type: "policy_failed",
+        actor: "system",
+        customer_id: payment.customer_id,
+        request_id: requestId,
+        entity_type: "payment",
+        entity_id: paymentId,
+        before_state: null,
+        after_state: { error: "Policy DB insert failed", db_error: policyInsertError },
+        system_version: SYSTEM_VERSION,
+        ip_address: null,
+      });
       return { success: false, error: "Policy record creation failed" };
     }
 

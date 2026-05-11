@@ -24,7 +24,8 @@ export type MaterialEventType =
   | "certificate_issued"
   | "certificate_failed"
   | "certificate_queued"
-  | "certificate_cancelled";
+  | "certificate_cancelled"
+  | "certificate_email_sent";
 
 export interface AuditEventInput {
   event_type: MaterialEventType;

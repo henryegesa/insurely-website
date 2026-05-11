@@ -32,8 +32,11 @@ export function validateWebhookPayload(raw: unknown): ValidationResult {
   if (p.processor !== "mpesa" && p.processor !== "card") {
     return { valid: false, error: "processor must be mpesa or card" };
   }
-  if (!p.confirmed_at || typeof p.confirmed_at !== "string" || isNaN(Date.parse(p.confirmed_at as string))) {
-    return { valid: false, error: "confirmed_at must be a valid ISO 8601 datetime" };
+  // confirmed_at is required only for confirmed payments
+  if (p.status === "confirmed") {
+    if (!p.confirmed_at || typeof p.confirmed_at !== "string" || isNaN(Date.parse(p.confirmed_at as string))) {
+      return { valid: false, error: "confirmed_at must be a valid ISO 8601 datetime" };
+    }
   }
   return { valid: true };
 }
@@ -113,7 +116,7 @@ if (import.meta.main) Deno.serve(async (req: Request) => {
   }
 
   await writeAuditEvent(supabase as any, {
-    event_type: "payment_confirmed",
+    event_type: payload.status === "confirmed" ? "payment_confirmed" : "payment_failed",
     actor: "system",
     customer_id: payload.customer_id,
     request_id: requestId,

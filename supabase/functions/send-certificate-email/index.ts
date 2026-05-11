@@ -71,8 +71,8 @@ if (import.meta.main) Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ error: "Certificate not found" }), { status: 404 });
   }
 
-  const { data: { user } } = await supabase.auth.admin.getUserById(customer_id);
-  const customerEmail = user?.email;
+  const { data: userData } = await supabase.auth.admin.getUserById(customer_id);
+  const customerEmail = userData?.user?.email;
 
   if (!customerEmail) {
     return new Response(JSON.stringify({ error: "Customer email not found" }), { status: 404 });
@@ -127,7 +127,7 @@ if (import.meta.main) Deno.serve(async (req: Request) => {
   }));
 
   await audit(supabase, {
-    event_type: "certificate_issued",
+    event_type: "certificate_email_sent",
     actor: "system",
     customer_id,
     request_id: requestId,
