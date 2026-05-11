@@ -25,3 +25,9 @@ Deno.test("scopedKey is deterministic for the same inputs", () => {
   const k2 = scopedKey("certificate", "pay-ref-abc");
   assertEquals(k1, k2);
 });
+
+Deno.test("scopedKey produces distinct keys for different scopes", () => {
+  const k1 = scopedKey("policy", "pay-ref-xyz");
+  const k2 = scopedKey("certificate", "pay-ref-xyz");
+  assertNotEquals(k1, k2);
+});
