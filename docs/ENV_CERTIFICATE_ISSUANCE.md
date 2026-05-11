@@ -104,10 +104,7 @@ The insurer adapter variables are insurer-specific. The names below are placehol
 |---|---|---|---|
 | `PAYMENT_WEBHOOK_SECRET` | HMAC secret or bearer token used to verify that incoming payment webhook payloads are genuinely from the payment processor (M-Pesa, card processor) and have not been tampered with | `payment-webhook` Edge Function (signature verification layer) | **HIGH** — without this, any caller can forge a payment confirmation. |
 
-**Note:** The current `payment-webhook` implementation does not yet include HMAC signature verification code. Before production:
-1. Implement signature verification at the top of the handler using this secret.
-2. Return HTTP 401 immediately if the signature is absent or invalid.
-3. This is a **production blocker** — see Production Blockers section.
+**Note:** HMAC-SHA256 signature verification is implemented in `supabase/functions/payment-webhook/signature.ts` (merged in PR #3, main at `f0b5ecb`). The handler reads `PAYMENT_WEBHOOK_SECRET` from `Deno.env.get("PAYMENT_WEBHOOK_SECRET")` and rejects any request with a missing, malformed, or invalid signature before touching the database. Full operational details are in `docs/PRODUCTION_DEPLOYMENT_CHECKLIST_CERTIFICATE_ISSUANCE.md` — Section 2 (Environment Gate).
 
 ---
 
@@ -115,10 +112,11 @@ The insurer adapter variables are insurer-specific. The names below are placehol
 
 | Blocker | Variable | Status |
 |---|---|---|
-| HMAC webhook signature verification not yet implemented | `PAYMENT_WEBHOOK_SECRET` | **OPEN** — code change required before production |
+| ~~HMAC webhook signature verification not yet implemented~~ | `PAYMENT_WEBHOOK_SECRET` | **CLOSED** — implemented and merged in PR #3 |
 | Insurer adapter variable names must be confirmed with insurer integration team | `INSURER_*` | **OPEN** — names are placeholders |
 | DMVIC sandbox credentials must be provisioned | `DMVIC_*` | **OPEN** — requires DMVIC onboarding |
 | Resend sender domain `insurely.co.ke` must be verified in Resend dashboard | `RESEND_API_KEY` | **OPEN** — requires DNS verification |
+| Timestamp-bound replay protection not yet implemented | — | **OPEN** — tracked as Issue #4; acceptable for sandbox with allowlisted network; required before unrestricted production exposure |
 
 ---
 
@@ -137,4 +135,4 @@ supabase secrets list
 - [ ] `INSURER_API_KEY` present and valid for target environment
 - [ ] `DMVIC_API_URL` present and pointing to correct environment
 - [ ] `DMVIC_API_KEY` present and valid for target environment
-- [ ] `PAYMENT_WEBHOOK_SECRET` present (once webhook signature verification is implemented)
+- [ ] `PAYMENT_WEBHOOK_SECRET` present and set via `supabase secrets set PAYMENT_WEBHOOK_SECRET=<value>` (generate with `openssl rand -hex 32`)
