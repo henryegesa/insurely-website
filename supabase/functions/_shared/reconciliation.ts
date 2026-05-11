@@ -1,8 +1,18 @@
 // supabase/functions/_shared/reconciliation.ts
 import type { ReconciliationLogInput, Uuid } from "./types.ts";
 
+function sortedJson(val: unknown): unknown {
+  if (val === null || typeof val !== "object" || Array.isArray(val)) return val;
+  return Object.fromEntries(
+    Object.keys(val as Record<string, unknown>).sort().map((k) => [
+      k,
+      sortedJson((val as Record<string, unknown>)[k]),
+    ]),
+  );
+}
+
 export async function hashPayload(payload: Record<string, unknown>): Promise<string> {
-  const text = JSON.stringify(payload, Object.keys(payload).sort());
+  const text = JSON.stringify(sortedJson(payload));
   const buffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
   return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
