@@ -32,7 +32,7 @@ create table if not exists policies (
   vehicle_registration  text not null,
   cover_type            text not null,
   cover_start_date      date not null,
-  cover_end_date        date not null,
+  cover_end_date        date not null check (cover_end_date > cover_start_date),
   status                text not null default 'requested'
                           check (status in ('requested', 'active', 'failed')),
   insurer_response      jsonb,
@@ -51,14 +51,15 @@ create table if not exists certificates (
   insurer_ira_license   text not null,
   vehicle_registration  text not null,
   cover_start_date      date not null,
-  cover_end_date        date not null,
-  premium_paid_kes      numeric(12, 2) not null,
+  cover_end_date        date not null check (cover_end_date > cover_start_date),
+  premium_paid_kes      numeric(12, 2) not null check (premium_paid_kes > 0),
   customer_id           uuid not null,
   customer_name         text not null,
   issued_at             timestamptz not null,
   issuing_system        text not null default 'dmvic',
   status                text not null default 'issued'
                           check (status in ('issued', 'cancelled')),
+  cancelled_at          timestamptz,
   dmvic_response        jsonb,
   created_at            timestamptz not null default now()
 );
@@ -69,7 +70,7 @@ create table if not exists audit_events (
   id              uuid primary key default gen_random_uuid(),
   event_type      text not null,
   actor           text not null,
-  customer_id     uuid,
+  customer_id     uuid, -- nullable: system-level events (e.g. scheduled queue runs) have no customer
   occurred_at     timestamptz not null default now(),
   request_id      text not null,
   entity_type     text not null,
@@ -126,4 +127,5 @@ create index if not exists audit_events_entity_idx      on audit_events (entity_
 create index if not exists audit_events_customer_idx    on audit_events (customer_id);
 create index if not exists audit_events_occurred_idx    on audit_events (occurred_at);
 create index if not exists recon_logs_integration_idx   on reconciliation_logs (integration_name, occurred_at);
+create index if not exists recon_logs_idempotency_idx   on reconciliation_logs (idempotency_key);
 create index if not exists cert_queue_status_idx        on certificate_queue (status, next_attempt_at);
