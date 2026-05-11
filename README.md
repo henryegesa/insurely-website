@@ -2,7 +2,7 @@
 
 Private motor insurance, reimagined for Kenya.
 
-A React + Vite marketing website for Insurely, a licensed digital insurance agency offering instant private motor insurance via M-Pesa.
+A React + Vite marketing website for Insurely, a licensed insurance agency offering instant private motor insurance via M-Pesa.
 
 ## Pages
 
