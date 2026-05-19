@@ -5,26 +5,26 @@ const pillars = [
   {
     mark: "IRA",
     index: "01",
-    title: "IRA Regulated",
-    copy: "Insurely operates under the Insurance Regulatory Authority of Kenya. Every carrier on our platform is licensed. Your policy is real.",
+    title: "Licensed agency",
+    copy: "Insurely is a licensed insurance agency operating under the Insurance Regulatory Authority of Kenya. Every insurance partner on our platform is IRA-licensed.",
   },
   {
     mark: "256",
     index: "02",
     title: "Bank-grade security",
-    copy: "256-bit encryption protects every transaction. Your personal and payment data is never stored on our servers.",
+    copy: "256-bit encryption protects every interaction. Your personal data is handled in accordance with Kenyan data protection law.",
   },
   {
-    mark: "A+",
+    mark: "✓",
     index: "03",
-    title: "Top-rated carriers",
-    copy: "We only partner with IRA-licensed insurers rated A or above. No fringe underwriters — only institutions that pay claims.",
+    title: "Licensed partners only",
+    copy: "We work exclusively with IRA-licensed insurance partners. No unlicensed underwriters — only institutions regulated to operate in Kenya.",
   },
   {
-    mark: "0:00",
+    mark: "Q3",
     index: "04",
-    title: "Instant bind",
-    copy: "Your certificate is issued the moment your M-Pesa payment clears. No waiting, no callbacks, no paperwork.",
+    title: "Digital at launch",
+    copy: "At launch, you'll be able to compare cover from licensed partners, request a quote online, and receive your policy documents digitally.",
   },
 ];
 
@@ -38,7 +38,6 @@ export default function Trust() {
   return (
     <section style={{ background: "#0a0907", padding: sectionPad, borderTop: "1px solid #2a2218" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        {/* Header */}
         <div ref={ref0} className="reveal" style={{ textAlign: "center", marginBottom: isSmall ? 36 : 52 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 20 }}>
             <div style={{ width: 28, height: 1, background: "#c9a55c" }} />
@@ -50,11 +49,10 @@ export default function Trust() {
             <em style={{ color: "#c9a55c", fontStyle: "italic" }}>powered by technology.</em>
           </h2>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 14 : 16, color: "#b8b1a3", maxWidth: 680, margin: "0 auto", lineHeight: 1.7 }}>
-            Every decision we've made — from our carrier partners to our payment flow — is designed to give you confidence.
+            Every decision we make — from which partners we work with to how we handle your data — is designed to give you confidence.
           </p>
         </div>
 
-        {/* Pillars grid — 4-col on desktop, 2x2 on tablet/mobile, 1-col on tiny */}
         <div
           ref={ref1}
           className="reveal"
@@ -110,7 +108,6 @@ export default function Trust() {
           })}
         </div>
 
-        {/* Proof strip */}
         <div
           style={{
             marginTop: 40,
@@ -130,9 +127,9 @@ export default function Trust() {
           </div>
           {!isSmall && <div style={{ width: 1, height: 20, background: "#2a2218" }} />}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: 3, color: "#7a7261" }}>LICENSE STATUS</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: 3, color: "#7a7261" }}>STATUS</span>
             <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#7ec48c", display: "inline-block", boxShadow: "0 0 8px #7ec48c" }} />
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 12 : 13, color: "#b8b1a3" }}>Licensed by IRA</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 12 : 13, color: "#b8b1a3" }}>Licensed insurance agency</span>
           </div>
         </div>
       </div>

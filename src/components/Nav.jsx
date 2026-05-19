@@ -1,8 +1,19 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 
-export default function Nav({ page, setPage }) {
+const links = [
+  { label: "Home", path: "/" },
+  { label: "Motor Insurance", path: "/motor-insurance" },
+  { label: "About", path: "/about" },
+  { label: "FAQ", path: "/faq" },
+  { label: "Contact", path: "/contact" },
+];
+
+export default function Nav() {
   const { isTablet } = useBreakpoint();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -12,7 +23,11 @@ export default function Nav({ page, setPage }) {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const links = ["Home", "About", "FAQ"];
+  const go = (path) => {
+    navigate(path);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setMenuOpen(false);
+  };
 
   return (
     <>
@@ -43,7 +58,7 @@ export default function Nav({ page, setPage }) {
             cursor: "pointer",
             fontWeight: 400,
           }}
-          onClick={() => setPage("Home")}
+          onClick={() => go("/")}
         >
           INSURELY
         </span>
@@ -57,29 +72,47 @@ export default function Nav({ page, setPage }) {
             ☰
           </button>
         ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
             {links.map((l) => (
               <span
-                key={l}
-                onClick={() => setPage(l)}
+                key={l.path}
+                onClick={() => go(l.path)}
                 className="nav-link"
                 style={{
                   fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  letterSpacing: 3,
+                  fontSize: 11,
+                  letterSpacing: 2,
                   fontWeight: 500,
-                  color: page === l ? "#c9a55c" : "#f5f1e8",
+                  color: pathname === l.path ? "#c9a55c" : "#f5f1e8",
                   textTransform: "uppercase",
+                  cursor: "pointer",
                 }}
               >
-                {l}
+                {l.label}
               </span>
             ))}
+            <button
+              onClick={() => go("/#waitlist")}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 11,
+                letterSpacing: 2,
+                fontWeight: 700,
+                color: "#0a0907",
+                background: "#c9a55c",
+                border: "none",
+                padding: "10px 20px",
+                cursor: "pointer",
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+              }}
+            >
+              JOIN WAITLIST
+            </button>
           </div>
         )}
       </nav>
 
-      {/* Full-screen menu overlay */}
       {menuOpen && (
         <div
           style={{
@@ -103,37 +136,37 @@ export default function Nav({ page, setPage }) {
           </button>
           <span
             style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, letterSpacing: 6, color: "#c9a55c", cursor: "pointer" }}
-            onClick={() => { setPage("Home"); setMenuOpen(false); }}
+            onClick={() => go("/")}
           >
             INSURELY
           </span>
           {links.map((l) => (
             <span
-              key={l}
-              onClick={() => { setPage(l); setMenuOpen(false); }}
+              key={l.path}
+              onClick={() => go(l.path)}
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontSize: 14,
                 letterSpacing: 4,
                 fontWeight: 500,
-                color: page === l ? "#c9a55c" : "#f5f1e8",
+                color: pathname === l.path ? "#c9a55c" : "#f5f1e8",
                 textTransform: "uppercase",
                 cursor: "pointer",
               }}
             >
-              {l}
+              {l.label}
             </span>
           ))}
           <button
-            onClick={() => { setPage("Home"); setMenuOpen(false); }}
+            onClick={() => go("/")}
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: 12,
               letterSpacing: 3,
-              fontWeight: 500,
-              color: "#c9a55c",
-              border: "1px solid #c9a55c",
-              background: "transparent",
+              fontWeight: 700,
+              color: "#0a0907",
+              background: "#c9a55c",
+              border: "none",
               padding: "14px 32px",
               textTransform: "uppercase",
               cursor: "pointer",

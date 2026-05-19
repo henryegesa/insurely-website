@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 import { useReveal } from "../hooks/useReveal";
@@ -7,12 +8,6 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
-
-const COVERS = [
-  { id: "tpo", label: "TPO", price: "KES 3,200/yr" },
-  { id: "tpp", label: "TPP", price: "KES 5,800/yr" },
-  { id: "comp", label: "Comprehensive", price: "KES 12,400/yr" },
-];
 
 const ConcentricCircles = () => (
   <svg
@@ -28,12 +23,8 @@ const ConcentricCircles = () => (
   </svg>
 );
 
-export default function Hero({ setPage }) {
-  const { isSmall, isMobile, isTablet } = useBreakpoint();
-  const ref1 = useReveal(0);
-  const ref2 = useReveal(150);
-
-  const [cover, setCover] = useState("comp");
+function WaitlistForm({ isSmall, isMobile }) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState(null);
@@ -41,30 +32,106 @@ export default function Hero({ setPage }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (honeypot) return;
-    if (!email || !email.includes("@")) return;
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed || !trimmed.includes("@")) return;
     setStatus("loading");
     try {
-      const { error } = await supabase.from("pending_verifications").insert([{ email }]);
+      const { error } = await supabase.from("pending_verifications").insert([{ email: trimmed }]);
       if (error) {
         setStatus(error.code === "23505" ? "duplicate" : "error");
       } else {
-        setStatus("success");
-        setEmail("");
-        if (setPage) setPage("Confirmation");
+        navigate("/confirmation");
       }
     } catch {
       setStatus("error");
     }
   };
 
+  return (
+    <form onSubmit={handleSubmit} style={{ marginTop: isSmall ? 28 : 36 }}>
+      <div style={{ display: "flex", flexDirection: (isSmall && !isMobile) ? "column" : (isSmall ? "column" : "row") }}>
+        <input
+          type="email"
+          placeholder="Your email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={status === "loading"}
+          style={{
+            flex: 1,
+            padding: isSmall ? "12px 14px" : "14px 16px",
+            background: "transparent",
+            border: "1px solid #3a2f1c",
+            borderBottom: isSmall ? "none" : undefined,
+            borderRight: isSmall ? "1px solid #3a2f1c" : "none",
+            color: "#f5f1e8",
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 14,
+            outline: "none",
+            boxSizing: "border-box",
+            minWidth: 0,
+            opacity: status === "loading" ? 0.6 : 1,
+          }}
+        />
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          style={{
+            padding: isSmall ? "12px 0" : "14px 20px",
+            background: "#c9a55c",
+            color: "#0a0907",
+            fontFamily: "'Inter', sans-serif",
+            fontSize: isSmall ? 11 : 12,
+            letterSpacing: 2,
+            fontWeight: 700,
+            border: "none",
+            cursor: status === "loading" ? "not-allowed" : "pointer",
+            whiteSpace: "nowrap",
+            width: isSmall ? "100%" : "auto",
+            opacity: status === "loading" ? 0.7 : 1,
+          }}
+        >
+          {status === "loading" ? "JOINING..." : "JOIN THE WAITLIST →"}
+        </button>
+      </div>
+      <input
+        type="text"
+        value={honeypot}
+        onChange={(e) => setHoneypot(e.target.value)}
+        style={{ display: "none" }}
+        tabIndex={-1}
+        aria-hidden="true"
+        autoComplete="off"
+      />
+      {status === "duplicate" && <p style={{ color: "#c9a55c", fontSize: 13, marginTop: 10 }}>That email is already on the waitlist.</p>}
+      {status === "error" && <p style={{ color: "#b8b1a3", fontSize: 13, marginTop: 10 }}>Something went wrong. Please try again.</p>}
+      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#7a7261", marginTop: 10, display: "flex", alignItems: "center", gap: 6 }}>
+        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7ec48c", display: "inline-block", flexShrink: 0 }} />
+        No spam. Unsubscribe at any time.
+      </p>
+    </form>
+  );
+}
+
+export default function Hero() {
+  const { isSmall, isMobile, isTablet } = useBreakpoint();
+  const ref1 = useReveal(0);
+  const ref2 = useReveal(150);
+
+  const [cover, setCover] = useState("comp");
+
+  const COVERS = [
+    { id: "tpo", label: "TPO", note: "Legal min." },
+    { id: "tpp", label: "TPP", note: "Popular" },
+    { id: "comp", label: "Comp", note: "Recommended" },
+  ];
+
+  const h1Size = isSmall ? 40 : isMobile ? 52 : isTablet ? 68 : 88;
+
   const avatars = [
     { initials: "WK", bg: "#c9a55c" },
     { initials: "JM", bg: "#7ec48c" },
     { initials: "AN", bg: "#a08fd4" },
   ];
-
-  const h1Size = isSmall ? 40 : isMobile ? 52 : isTablet ? 68 : 88;
-  const padH = isSmall ? "0 16px" : isMobile ? "0 20px" : "0 48px";
 
   return (
     <section
@@ -81,7 +148,6 @@ export default function Hero({ setPage }) {
     >
       <ConcentricCircles />
 
-      {/* Main grid */}
       <div
         style={{
           flex: 1,
@@ -98,7 +164,6 @@ export default function Hero({ setPage }) {
       >
         {/* Left column */}
         <div ref={ref1} className="reveal">
-          {/* Eyebrow */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: isSmall ? 20 : 28 }}>
             <div style={{ width: 28, height: 1, background: "#c9a55c", flexShrink: 0 }} />
             <span style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 9 : 11, letterSpacing: isSmall ? 2 : 4, color: "#c9a55c", fontWeight: 600 }}>
@@ -106,7 +171,6 @@ export default function Hero({ setPage }) {
             </span>
           </div>
 
-          {/* H1 */}
           <h1
             style={{
               fontFamily: "'Cormorant Garamond', serif",
@@ -117,20 +181,18 @@ export default function Hero({ setPage }) {
               marginBottom: isSmall ? 20 : 28,
             }}
           >
-            Private motor insurance,{" "}
-            <em style={{ color: "#c9a55c", fontStyle: "italic" }}>reimagined</em>
+            Motor insurance,{" "}
+            <em style={{ color: "#c9a55c", fontStyle: "italic" }}>simplified.</em>
           </h1>
 
-          {/* Lede */}
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 14 : 16, lineHeight: 1.7, color: "#b8b1a3", marginBottom: isSmall ? 24 : 36, maxWidth: 480 }}>
-            We're building the fastest way to insure your car in Kenya. Quote, pay via M-Pesa or Airtel Money, drive covered — in under 3 minutes.
+            Join the early access list for a faster way to compare and buy motor insurance through licensed insurance partners.
           </p>
 
-          {/* Badges */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: isSmall ? 8 : 12, marginBottom: isSmall ? 24 : 36 }}>
             {[
-              { dot: "#7ec48c", label: "PAY VIA M-PESA OR AIRTEL MONEY" },
-              { dot: "#c9a55c", label: "IRA REGULATED" },
+              { dot: "#7ec48c", label: "LICENSED INSURANCE AGENCY" },
+              { dot: "#c9a55c", label: "IRA LICENSED PARTNERS" },
             ].map(({ dot, label }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, padding: isSmall ? "8px 12px" : "10px 16px", border: "1px solid #2a2218" }}>
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: dot, display: "inline-block", flexShrink: 0 }} />
@@ -141,7 +203,6 @@ export default function Hero({ setPage }) {
             ))}
           </div>
 
-          {/* Social proof */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <div style={{ display: "flex" }}>
               {avatars.map((a, i) => (
@@ -173,65 +234,12 @@ export default function Hero({ setPage }) {
             </span>
           </div>
 
-          {/* Email form — shown on mobile/tablet */}
-          {isTablet && (
-            <form onSubmit={handleSubmit} style={{ marginTop: isSmall ? 28 : 36 }}>
-              <div style={{ display: "flex", flexDirection: isSmall ? "column" : "row" }}>
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: isSmall ? "12px 14px" : "14px 16px",
-                    background: "transparent",
-                    border: "1px solid #3a2f1c",
-                    borderBottom: isSmall ? "none" : undefined,
-                    borderRight: isSmall ? "1px solid #3a2f1c" : "none",
-                    color: "#f5f1e8",
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 14,
-                    outline: "none",
-                    boxSizing: "border-box",
-                    minWidth: 0,
-                  }}
-                />
-                <button
-                  type="submit"
-                  style={{
-                    padding: isSmall ? "12px 0" : "14px 20px",
-                    background: "#c9a55c",
-                    color: "#0a0907",
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: isSmall ? 11 : 12,
-                    letterSpacing: 2,
-                    fontWeight: 700,
-                    border: "none",
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                    width: isSmall ? "100%" : "auto",
-                  }}
-                >
-                  SEND ME MORE INFO →
-                </button>
-              </div>
-              <input type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} style={{ display: "none" }} tabIndex={-1} />
-              {status === "success"   && <p style={{ color: "#7ec48c", fontSize: 13, marginTop: 10 }}>You're on the list! Check your inbox.</p>}
-              {status === "duplicate" && <p style={{ color: "#c9a55c", fontSize: 13, marginTop: 10 }}>That email is already on the waitlist.</p>}
-              {status === "error"     && <p style={{ color: "#b8b1a3", fontSize: 13, marginTop: 10 }}>Something went wrong. Please try again.</p>}
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#7a7261", marginTop: 10, display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7ec48c", display: "inline-block", flexShrink: 0 }} />
-                No spam. Unsubscribe at any time.
-              </p>
-            </form>
-          )}
+          {isTablet && <WaitlistForm isSmall={isSmall} isMobile={isMobile} />}
         </div>
 
         {/* Right column — desktop only */}
         {!isTablet && (
           <div ref={ref2} className="reveal delay-2">
-            {/* Quote card */}
             <div
               style={{
                 background: "linear-gradient(180deg, #15110a 0%, #100d07 100%)",
@@ -241,10 +249,10 @@ export default function Hero({ setPage }) {
               }}
             >
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, letterSpacing: 3, color: "#7a7261", marginBottom: 16 }}>
-                GET A QUOTE IN 60 SECONDS
+                WHAT EARLY ACCESS LOOKS LIKE
               </p>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#9b9485", marginBottom: 20 }}>
-                This is what early-access members will see.
+                A preview of the quote experience at launch.
               </p>
 
               <div style={{ marginBottom: 24 }}>
@@ -294,7 +302,7 @@ export default function Hero({ setPage }) {
                       }}
                     >
                       <div>{c.label}</div>
-                      <div style={{ fontSize: 10, color: "#7a7261", marginTop: 4, fontWeight: 400 }}>{c.price}</div>
+                      <div style={{ fontSize: 10, color: "#7a7261", marginTop: 4, fontWeight: 400 }}>{c.note}</div>
                     </button>
                   ))}
                 </div>
@@ -302,65 +310,17 @@ export default function Hero({ setPage }) {
 
               <div style={{ padding: "12px 16px", background: "rgba(42,34,24,0.4)", border: "1px solid #2a2218" }}>
                 <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#7a7261", lineHeight: 1.6 }}>
-                  🔒 Quotes go live at launch. Join the waitlist below to be first in.
+                  Quotes go live at launch. Join the waitlist to be first in.
                 </p>
               </div>
             </div>
 
-            {/* Desktop email form */}
-            <form onSubmit={handleSubmit}>
-              <div style={{ display: "flex" }}>
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: "14px 16px",
-                    background: "transparent",
-                    border: "1px solid #3a2f1c",
-                    borderRight: "none",
-                    color: "#f5f1e8",
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 14,
-                    outline: "none",
-                    minWidth: 0,
-                  }}
-                />
-                <button
-                  type="submit"
-                  style={{
-                    padding: "14px 20px",
-                    background: "#c9a55c",
-                    color: "#0a0907",
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12,
-                    letterSpacing: 2,
-                    fontWeight: 700,
-                    border: "none",
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                  }}
-                >
-                  SEND ME MORE INFO →
-                </button>
-              </div>
-              <input type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} style={{ display: "none" }} tabIndex={-1} />
-              {status === "success"   && <p style={{ color: "#7ec48c", fontSize: 13, marginTop: 10 }}>You're on the list! Check your inbox.</p>}
-              {status === "duplicate" && <p style={{ color: "#c9a55c", fontSize: 13, marginTop: 10 }}>That email is already on the waitlist.</p>}
-              {status === "error"     && <p style={{ color: "#b8b1a3", fontSize: 13, marginTop: 10 }}>Something went wrong. Please try again.</p>}
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#7a7261", marginTop: 12, display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7ec48c", display: "inline-block", flexShrink: 0 }} />
-                No spam. Unsubscribe at any time. IRA regulated.
-              </p>
-            </form>
+            <WaitlistForm isSmall={false} isMobile={false} />
           </div>
         )}
       </div>
 
-      {/* Carriers strip */}
+      {/* Partners strip */}
       <div
         style={{
           position: "absolute",
@@ -369,49 +329,12 @@ export default function Hero({ setPage }) {
           right: 0,
           borderTop: "1px solid #2a2218",
           background: "rgba(10,9,7,0.9)",
-          overflow: "hidden",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", padding: isSmall ? "12px 16px" : isMobile ? "14px 20px" : "18px 48px", gap: isSmall ? 12 : 20 }}>
-          {!isSmall && (
-            <>
-              <span
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 9,
-                  letterSpacing: 2,
-                  color: "#4a4235",
-                  whiteSpace: "nowrap",
-                  flexShrink: 0,
-                  fontWeight: 600,
-                }}
-              >
-                {isMobile ? "TOP CARRIERS" : "WORKING WITH KENYA'S TOP CARRIERS"}
-              </span>
-              <div style={{ width: 1, height: 16, background: "#2a2218", flexShrink: 0 }} />
-            </>
-          )}
-          <div style={{ overflow: "hidden", flex: 1 }}>
-            <div className="carriers-track">
-              {["BRITAM", "JUBILEE", "CIC", "APA", "HERITAGE", "MADISON", "OLD MUTUAL",
-                "BRITAM", "JUBILEE", "CIC", "APA", "HERITAGE", "MADISON", "OLD MUTUAL"].map((name, i) => (
-                <span
-                  key={i}
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: isSmall ? 11 : isMobile ? 13 : 15,
-                    letterSpacing: isSmall ? 2 : 4,
-                    color: "#6a5e4a",
-                    whiteSpace: "nowrap",
-                    padding: isSmall ? "0 16px" : "0 28px",
-                    display: "inline-block",
-                  }}
-                >
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
+        <div style={{ display: "flex", alignItems: "center", padding: isSmall ? "14px 16px 12px" : isMobile ? "16px 20px 12px" : "18px 48px 12px", gap: isSmall ? 12 : 20 }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 9 : 10, letterSpacing: 2, color: "#4a4235", whiteSpace: "nowrap", flexShrink: 0, fontWeight: 600 }}>
+            {isMobile ? "INSURANCE PARTNERS" : "MOTOR INSURANCE ACCESS THROUGH LICENSED INSURANCE PARTNERS"}
+          </span>
         </div>
       </div>
     </section>
