@@ -16,9 +16,9 @@ const BrowserMockup = ({ isSmall }) => (
     <div style={{ padding: isSmall ? 14 : 20 }}>
       <p style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 9 : 11, letterSpacing: 2, color: "#7a7261", marginBottom: 12 }}>QUOTES FOR KZZ 005F</p>
       {[
-        { carrier: "Britam", price: "KES 12,400", badge: "BEST PRICE" },
-        { carrier: "APA Insurance", price: "KES 13,200", badge: null },
-        { carrier: "CIC Group", price: "KES 14,100", badge: null },
+        { carrier: "Partner A", price: "KES 12,400", badge: "BEST PRICE" },
+        { carrier: "Partner B", price: "KES 13,200", badge: null },
+        { carrier: "Partner C", price: "KES 14,100", badge: null },
       ].map((q) => (
         <div
           key={q.carrier}

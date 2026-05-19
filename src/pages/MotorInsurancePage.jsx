@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useReveal } from "../hooks/useReveal";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 
@@ -72,13 +73,13 @@ const processSteps = [
   },
   {
     num: "03",
-    title: "Pay via M-Pesa",
-    copy: "Choose your insurer and pay via M-Pesa or Airtel Money. Your premium goes directly to the insurer — not through Insurely.",
+    title: "Choose and pay",
+    copy: "Select the insurer and cover that fits you. At launch, pay directly via M-Pesa or Airtel Money — your premium goes to the insurer, not Insurely.",
   },
   {
     num: "04",
-    title: "Get your certificate",
-    copy: "Once payment confirms, your digital motor insurance certificate is issued and delivered instantly. DMVIC-compliant at launch.",
+    title: "Receive your documents",
+    copy: "At launch, your policy documents will be delivered digitally. Digital certificate issuance is planned subject to DMVIC integration.",
   },
 ];
 
@@ -92,7 +93,8 @@ const requiredDetails = [
   { label: "Email address", note: "Certificate and policy documents delivered here" },
 ];
 
-export default function MotorInsurancePage({ setPage }) {
+export default function MotorInsurancePage() {
+  const navigate = useNavigate();
   const { isSmall, isMobile, isTablet } = useBreakpoint();
   const ref0 = useReveal(0);
   const ref1 = useReveal(100);
@@ -129,12 +131,12 @@ export default function MotorInsurancePage({ setPage }) {
             <em style={{ color: "#c9a55c", fontStyle: "italic" }}>works.</em>
           </h1>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: isSmall ? 15 : 17, color: "#b8b1a3", lineHeight: 1.75, maxWidth: 600, marginBottom: 36 }}>
-            Private motor insurance for Kenyan drivers — digitally distributed through IRA-licensed insurer partners.
-            Compare cover, pay via M-Pesa, and receive your certificate digitally.
+            Motor insurance for Kenyan drivers — accessed through IRA-licensed insurance partners.
+            Compare cover options and join the waitlist for early access at launch.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
             <button
-              onClick={() => setPage("Quote")}
+              onClick={() => navigate("/")}
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontSize: 12,
@@ -147,12 +149,12 @@ export default function MotorInsurancePage({ setPage }) {
                 cursor: "pointer",
               }}
             >
-              GET A QUOTE →
+              JOIN WAITLIST →
             </button>
             <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "14px 16px", border: "1px solid #2a2218" }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c9a55c", display: "inline-block" }} />
               <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, letterSpacing: 2, color: "#9b9485", fontWeight: 600 }}>
-                IRA LICENSED INSURERS ONLY
+                IRA LICENSED PARTNERS ONLY
               </span>
             </div>
           </div>
@@ -228,7 +230,7 @@ export default function MotorInsurancePage({ setPage }) {
                 </div>
 
                 <button
-                  onClick={() => setPage("Quote")}
+                  onClick={() => navigate("/")}
                   style={{
                     width: "100%",
                     fontFamily: "'Inter', sans-serif",
@@ -243,7 +245,7 @@ export default function MotorInsurancePage({ setPage }) {
                     transition: "all 0.2s",
                   }}
                 >
-                  GET A {ct.abbr} QUOTE →
+                  JOIN WAITLIST →
                 </button>
               </div>
             ))}
@@ -344,14 +346,14 @@ export default function MotorInsurancePage({ setPage }) {
         <div ref={ref4} className="reveal" style={{ maxWidth: 1200, margin: "0 auto", padding: isSmall ? "48px 16px" : isMobile ? "60px 20px" : "80px 48px", display: "flex", flexDirection: isTablet ? "column" : "row", alignItems: isTablet ? "flex-start" : "center", justifyContent: "space-between", gap: 32 }}>
           <div>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isSmall ? 36 : 52, fontWeight: 400, color: "#f5f1e8", lineHeight: 1.1, marginBottom: 12 }}>
-              Ready to get <em style={{ color: "#c9a55c", fontStyle: "italic" }}>covered?</em>
+              Be first at <em style={{ color: "#c9a55c", fontStyle: "italic" }}>launch.</em>
             </h2>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: "#9b9485", lineHeight: 1.6 }}>
-              Submit a quote request now. We'll confirm pricing before launch.
+              Join the waitlist for early access when we launch in Q3 2026.
             </p>
           </div>
           <button
-            onClick={() => setPage("Quote")}
+            onClick={() => navigate("/")}
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: 13,
@@ -366,7 +368,7 @@ export default function MotorInsurancePage({ setPage }) {
               flexShrink: 0,
             }}
           >
-            GET A QUOTE →
+            JOIN WAITLIST →
           </button>
         </div>
       </div>

@@ -2,8 +2,8 @@ import { useReveal } from "../hooks/useReveal";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 
 const beliefs = [
-  { num: "01", title: "Speed is a feature.", copy: "Every minute you spend filling forms is a minute we failed you. Our goal: quote to certificate in under 3 minutes, always." },
-  { num: "02", title: "Money goes direct.", copy: "Your premium goes straight to the insurer via M-Pesa. We're a technology layer — not a financial intermediary." },
+  { num: "01", title: "Speed is the goal.", copy: "Every minute you spend filling forms is a minute we failed you. Our goal at launch: compare cover and request a quote in minutes, without phone calls." },
+  { num: "02", title: "Transparent by design.", copy: "We connect you with IRA-licensed insurance partners. Our role is distribution — we help you find and compare cover, not hold your money." },
   { num: "03", title: "Honesty over upsell.", copy: "We show you all the options and let you choose. No hidden add-ons, no pressure tactics, no commissions inflating your price." },
   { num: "04", title: "Mobile-first, always.", copy: "70% of Kenyans access the internet on a phone. We built Insurely for the phone first, and everything else second." },
 ];

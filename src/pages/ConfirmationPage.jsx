@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 
@@ -23,7 +24,7 @@ const ConcentricCircles = () => (
   </svg>
 );
 
-const REFERRAL_URL = "insurely.co.ke/?r=KZZ005F";
+const REFERRAL_URL = "insurely.co.ke";
 
 function fireConfetti() {
   const gold = "#c9a55c";
@@ -48,8 +49,9 @@ function fireConfetti() {
   }, 200);
 }
 
-export default function ConfirmationPage({ setPage }) {
+export default function ConfirmationPage() {
   const { isMobile } = useBreakpoint();
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -64,33 +66,27 @@ export default function ConfirmationPage({ setPage }) {
     });
   };
 
-  const handleConfirmSpot = () => {
-    fireConfetti();
-  };
-
   const joinedDate = new Date().toLocaleDateString("en-KE", { day: "numeric", month: "long", year: "numeric" });
 
   return (
     <div style={{ background: "#0a0907", minHeight: "100vh", position: "relative", overflow: "hidden" }}>
       <ConcentricCircles />
 
-      {/* Minimal nav */}
       <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "0 20px" : "0 48px", height: 64, borderBottom: "1px solid #2a2218", position: "relative", zIndex: 10 }}>
         <span
           style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? 18 : 22, letterSpacing: 6, color: "#c9a55c", cursor: "pointer" }}
-          onClick={() => setPage("Home")}
+          onClick={() => navigate("/")}
         >
           INSURELY
         </span>
         <button
-          onClick={() => setPage("Home")}
+          onClick={() => navigate("/")}
           style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, letterSpacing: 2, color: "#9b9485", background: "none", border: "none", cursor: "pointer" }}
         >
           ← BACK TO HOME
         </button>
       </nav>
 
-      {/* Content */}
       <div
         style={{
           maxWidth: 680,
@@ -101,7 +97,6 @@ export default function ConfirmationPage({ setPage }) {
           zIndex: 1,
         }}
       >
-        {/* Gold check ring */}
         <div
           style={{
             width: 88,
@@ -120,7 +115,6 @@ export default function ConfirmationPage({ setPage }) {
           </svg>
         </div>
 
-        {/* Eyebrow */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 20 }}>
           <div style={{ width: 32, height: 1, background: "#c9a55c" }} />
           <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, letterSpacing: 4, color: "#c9a55c", fontWeight: 600 }}>YOU'RE ON THE LIST</span>
@@ -133,15 +127,13 @@ export default function ConfirmationPage({ setPage }) {
         </h1>
 
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: isMobile ? 15 : 16, color: "#b8b1a3", lineHeight: 1.75, marginBottom: 36 }}>
-          We've sent a confirmation to your inbox. You're driver #1,248 on the waitlist. When Wave 1 opens in Q3 2026, you'll be among the first to know.
+          You're on the early access list. When we launch in Q3 2026, you'll be among the first to know.
         </p>
 
-
-        {/* Referral box */}
         <div style={{ border: "1px solid #2a2218", padding: isMobile ? 20 : 28, marginBottom: 40, textAlign: "left" }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, letterSpacing: 3, color: "#7a7261", marginBottom: 14 }}>JUMP THE QUEUE</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, letterSpacing: 3, color: "#7a7261", marginBottom: 14 }}>SPREAD THE WORD</p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: "#b8b1a3", lineHeight: 1.65, marginBottom: 18 }}>
-            Refer a friend and move up the list. Share your unique link:
+            Know someone who needs motor insurance? Share Insurely:
           </p>
           <div style={{ display: "flex", marginBottom: 16 }}>
             <div
@@ -182,8 +174,8 @@ export default function ConfirmationPage({ setPage }) {
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             {[
-              { label: "WHATSAPP", href: `https://wa.me/?text=I%20just%20joined%20the%20Insurely%20waitlist%20%E2%80%94%20insure%20your%20car%20in%20Kenya%20in%20under%203%20minutes%3A%20https%3A%2F%2F${REFERRAL_URL}` },
-              { label: "X / TWITTER", href: `https://x.com/intent/tweet?text=I%20just%20joined%20the%20%40insurelyke%20waitlist.%20Private%20motor%20insurance%20in%20Kenya%2C%20reimagined%3A%20https%3A%2F%2F${REFERRAL_URL}` },
+              { label: "WHATSAPP", href: `https://wa.me/?text=I%20just%20joined%20the%20Insurely%20waitlist%20%E2%80%94%20motor%20insurance%20in%20Kenya%2C%20simplified%3A%20https%3A%2F%2F${REFERRAL_URL}` },
+              { label: "X / TWITTER", href: `https://x.com/intent/tweet?text=I%20just%20joined%20the%20%40insurelyke%20waitlist.%20Motor%20insurance%20in%20Kenya%2C%20simplified%3A%20https%3A%2F%2F${REFERRAL_URL}` },
               { label: "EMAIL", href: `mailto:?subject=Join%20the%20Insurely%20waitlist&body=I%20just%20joined%20Insurely%20%E2%80%94%20check%20it%20out%3A%20https%3A%2F%2F${REFERRAL_URL}` },
             ].map(({ label, href }) => (
               <a
@@ -199,7 +191,6 @@ export default function ConfirmationPage({ setPage }) {
           </div>
         </div>
 
-        {/* Meta */}
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 28 }}>
           <div>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: 3, color: "#7a7261", marginBottom: 6 }}>WAVE 1 OPENS</p>

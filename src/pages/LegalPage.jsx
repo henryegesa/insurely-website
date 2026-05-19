@@ -1,28 +1,89 @@
 import { useBreakpoint } from "../hooks/useBreakpoint";
 
 const privacySections = [
-  { num: "01", title: "Who we are", body: "Insurely is a digital insurance distribution platform operated in Kenya. We connect you with IRA-licensed insurers and facilitate premium payments via M-Pesa and Airtel Money. Our registered address is Nairobi, Kenya. You can reach us at hello@insurely.co.ke." },
-  { num: "02", title: "What data we collect", body: "We collect your email address when you join the waitlist. At launch, we'll also collect vehicle registration details (sourced from your input and NTSA), your mobile number for payment processing, and basic identity information required by IRA regulations." },
-  { num: "03", title: "How we use your data", body: "We use your data to: process insurance quotes and policies, send your certificate of insurance, communicate product updates and your waitlist status, comply with IRA licensing requirements, and improve our platform. We do not sell your data to third parties." },
-  { num: "04", title: "Payment data", body: "Insurely does not store your M-Pesa PIN or Airtel Money credentials. Payment transactions are processed through Safaricom's and Airtel's secure infrastructure. We store only the transaction reference and amount for policy records." },
-  { num: "05", title: "Data sharing", body: "We share your data only with: the insurer you choose (required to issue your policy), Safaricom and Airtel (for payment processing), and the Insurance Regulatory Authority of Kenya (as required by law). We use no advertising networks." },
-  { num: "06", title: "Data retention", body: "Waitlist email addresses are retained until you unsubscribe or request deletion. Policy data is retained for the duration required by IRA regulations (currently 7 years from policy expiry)." },
-  { num: "07", title: "Your rights", body: "You have the right to access, correct, or delete your personal data. To exercise these rights, email hello@insurely.co.ke. We will respond within 30 days. You may also unsubscribe from waitlist communications at any time using the link in any email we send." },
-  { num: "08", title: "Cookies and tracking", body: "We use minimal, privacy-respecting analytics to understand how visitors use our site. We do not use advertising cookies or cross-site tracking. You can disable cookies in your browser settings without affecting core site functionality." },
-  { num: "09", title: "Changes to this policy", body: "We may update this Privacy Policy from time to time. We will notify waitlist members of material changes by email. Continued use of our platform after changes constitutes acceptance of the updated policy." },
+  {
+    num: "01",
+    title: "Who we are",
+    body: "Insurely is a licensed insurance agency operating in Kenya. We help customers discover and compare motor insurance through licensed insurance partners. Our registered address is Nairobi, Kenya. You can reach us at hello@insurely.co.ke.",
+  },
+  {
+    num: "02",
+    title: "What data we collect",
+    body: "Currently, we only collect your email address when you join the waitlist. We use this to send you product updates, launch announcements, and early access invitations. We do not collect payment data, vehicle information, or identity documents at this stage.",
+  },
+  {
+    num: "03",
+    title: "How we use your data",
+    body: "We use your email address to: send you waitlist updates and early access notifications, inform you about the Insurely product before launch, and communicate any material changes to our service. We do not sell your data to third parties.",
+  },
+  {
+    num: "04",
+    title: "Data sharing",
+    body: "We do not share your email address with insurers, payment processors, or any third parties at this stage. When the product launches, our privacy policy will be updated to reflect any data sharing required for insurance distribution.",
+  },
+  {
+    num: "05",
+    title: "Data retention",
+    body: "Waitlist email addresses are retained until you unsubscribe or request deletion. You can unsubscribe at any time using the link in any email we send, or by emailing hello@insurely.co.ke.",
+  },
+  {
+    num: "06",
+    title: "Your rights",
+    body: "You have the right to access, correct, or delete your personal data. To exercise these rights, email hello@insurely.co.ke. We will respond within 30 days.",
+  },
+  {
+    num: "07",
+    title: "Cookies and analytics",
+    body: "We use minimal, privacy-respecting analytics to understand how visitors use our site. We do not use advertising cookies or cross-site tracking. You can disable cookies in your browser without affecting core site functionality.",
+  },
+  {
+    num: "08",
+    title: "Changes to this policy",
+    body: "We may update this Privacy Policy as the product develops. We will notify waitlist members of material changes by email. The current policy applies to waitlist data collection only.",
+  },
 ];
 
 const termsSections = [
-  { num: "01", title: "Acceptance of terms", body: "By accessing or using Insurely's platform (including joining the waitlist), you agree to these Terms of Service. If you do not agree, please do not use our platform." },
-  { num: "02", title: "Nature of our service", body: "Insurely is an insurance distribution platform, not an insurer. We facilitate the purchase of insurance products from IRA-licensed underwriters. Your insurance contract is between you and the insurer — not Insurely." },
-  { num: "03", title: "Waitlist", body: "Joining the waitlist does not guarantee access to the platform at launch, constitute a binding insurance contract, or entitle you to any specific pricing. We reserve the right to modify waitlist terms at any time." },
-  { num: "04", title: "Eligibility", body: "You must be at least 18 years old and a resident of Kenya to use Insurely. You must have a valid Kenyan driving licence and a vehicle registered with NTSA to purchase motor insurance through our platform." },
-  { num: "05", title: "Accuracy of information", body: "You agree to provide accurate, complete, and current information when using our platform. Providing false information may void your insurance policy and may constitute insurance fraud under Kenyan law." },
-  { num: "06", title: "Payments", body: "Premium payments are final and non-refundable once processed, except where the insurer's cooling-off period applies. Insurely does not hold insurance premiums — all payments go directly to the insurer via M-Pesa or Airtel Money." },
-  { num: "07", title: "Limitation of liability", body: "Insurely's liability to you is limited to the fees paid to us (if any). We are not liable for insurer insolvency, claim disputes, or losses arising from your use of our platform beyond our direct control." },
-  { num: "08", title: "Intellectual property", body: "All content, trademarks, and software on our platform are owned by or licensed to Insurely. You may not copy, modify, or distribute our content without written permission." },
-  { num: "09", title: "Governing law", body: "These Terms are governed by the laws of Kenya. Any disputes shall be subject to the exclusive jurisdiction of the courts of Nairobi, Kenya." },
-  { num: "10", title: "Contact", body: "For any questions about these Terms, contact us at hello@insurely.co.ke or write to our registered address in Nairobi, Kenya." },
+  {
+    num: "01",
+    title: "Acceptance of terms",
+    body: "By accessing the Insurely website or joining the waitlist, you agree to these Terms of Service. If you do not agree, please do not use our website.",
+  },
+  {
+    num: "02",
+    title: "Nature of our service",
+    body: "Insurely is a licensed insurance agency. This website is a pre-launch waitlist and information site. We are not currently selling, binding, or issuing insurance policies through this website. Any insurance products described are planned for future launch and subject to final partner agreements.",
+  },
+  {
+    num: "03",
+    title: "Waitlist",
+    body: "Joining the waitlist does not guarantee access to the platform at launch, constitute a binding insurance contract, or entitle you to any specific pricing. We reserve the right to modify waitlist terms at any time.",
+  },
+  {
+    num: "04",
+    title: "Accuracy of information",
+    body: "Cover types, indicative prices, and process descriptions on this website are for informational purposes only. Final premium, terms, and availability will be confirmed at launch in partnership with IRA-licensed insurers.",
+  },
+  {
+    num: "05",
+    title: "Limitation of liability",
+    body: "Insurely's liability to you in connection with this waitlist website is limited to the information provided herein. We make no guarantee of availability, pricing, or product features at launch.",
+  },
+  {
+    num: "06",
+    title: "Intellectual property",
+    body: "All content, trademarks, and materials on this website are owned by or licensed to Insurely. You may not copy, modify, or distribute our content without written permission.",
+  },
+  {
+    num: "07",
+    title: "Governing law",
+    body: "These Terms are governed by the laws of Kenya. Any disputes shall be subject to the exclusive jurisdiction of the courts of Nairobi, Kenya.",
+  },
+  {
+    num: "08",
+    title: "Contact",
+    body: "For any questions about these Terms, contact us at hello@insurely.co.ke or write to our registered address in Nairobi, Kenya.",
+  },
 ];
 
 function LegalLayout({ eyebrow, title, italic, sections }) {

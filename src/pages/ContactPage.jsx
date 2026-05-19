@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import { useReveal } from "../hooks/useReveal";
 import { useBreakpoint } from "../hooks/useBreakpoint";
@@ -71,7 +72,8 @@ const contactDetails = [
   },
 ];
 
-export default function ContactPage({ setPage }) {
+export default function ContactPage() {
+  const navigate = useNavigate();
   const { isSmall, isMobile, isTablet } = useBreakpoint();
   const ref0 = useReveal(0);
   const ref1 = useReveal(100);
@@ -159,21 +161,14 @@ export default function ContactPage({ setPage }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: 3, color: "#7a7261", fontWeight: 600, marginBottom: 4 }}>QUICK LINKS</p>
               <button
-                onClick={() => setPage("Quote")}
+                onClick={() => navigate("/motor-insurance")}
                 style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, letterSpacing: 2, color: "#c9a55c", background: "transparent", border: "1px solid #2a2218", padding: "12px 16px", cursor: "pointer", textAlign: "left", display: "flex", justifyContent: "space-between" }}
               >
-                <span>Get a motor insurance quote</span>
+                <span>Motor insurance information</span>
                 <span>→</span>
               </button>
               <button
-                onClick={() => setPage("Partners")}
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, letterSpacing: 2, color: "#c9a55c", background: "transparent", border: "1px solid #2a2218", padding: "12px 16px", cursor: "pointer", textAlign: "left", display: "flex", justifyContent: "space-between" }}
-              >
-                <span>Insurer & partner programme</span>
-                <span>→</span>
-              </button>
-              <button
-                onClick={() => setPage("FAQ")}
+                onClick={() => navigate("/faq")}
                 style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, letterSpacing: 2, color: "#9b9485", background: "transparent", border: "1px solid #2a2218", padding: "12px 16px", cursor: "pointer", textAlign: "left", display: "flex", justifyContent: "space-between" }}
               >
                 <span>Frequently asked questions</span>
@@ -225,7 +220,7 @@ export default function ContactPage({ setPage }) {
                   </label>
                   <FocusTextarea placeholder="Write your message here..." value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} />
                 </div>
-                <input type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} style={{ display: "none" }} tabIndex={-1} />
+                <input type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} style={{ display: "none" }} tabIndex={-1} aria-hidden="true" autoComplete="off" />
                 <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
                   <button
                     type="submit"

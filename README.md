@@ -1,64 +1,73 @@
-# Insurely — Marketing Website
+# Insurely — Public Waitlist Website
 
-Private motor insurance, reimagined for Kenya.
+Public marketing and waitlist website for Insurely, a licensed insurance agency helping customers discover motor insurance through licensed insurance partners.
 
-A React + Vite marketing website for Insurely, a licensed digital insurance agency offering instant private motor insurance via M-Pesa.
+This repo contains only the public website. Backend infrastructure (payment webhooks, Edge Functions, migrations, certificate issuance) lives in a separate repository.
+
+## What this site does
+
+- Explains what Insurely is and how it will work at launch
+- Captures waitlist emails via Supabase (anonymous insert only, RLS-restricted)
+- Provides motor insurance product information
+- Links to Privacy Policy and Terms of Service
+
+## Stack
+
+- **Framework**: React 18 + Vite
+- **Routing**: React Router v6 (real URL routes)
+- **Backend**: Supabase (waitlist email capture only)
+- **Deployment**: Vercel
 
 ## Pages
 
-- **Home** — Hero with dual CTA (Play Store + waitlist), 3-step how it works, cover options (TPO / TPP / Comprehensive), trust signals, bottom CTA
-- **About** — Mission, problem/solution, differentiators, IRA regulatory compliance
-- **FAQ** — Accordion-style grouped by Coverage, Payments, Claims, Trust & Regulation
+| Route | Page |
+|---|---|
+| `/` | Home — hero, how it works, cover options, trust, waitlist CTA |
+| `/motor-insurance` | Motor Insurance — cover types, requirements, process |
+| `/about` | About Insurely |
+| `/faq` | Frequently asked questions |
+| `/contact` | Contact form |
+| `/privacy` | Privacy Policy (waitlist scope) |
+| `/terms` | Terms of Service (waitlist scope) |
+| `/confirmation` | Post-signup confirmation |
 
-## Brand
-
-- **Font**: Plus Jakarta Sans (400, 500, 600, 700, 800)
-- **Primary**: Midnight Navy `#0B1A2E`
-- **Accent**: Champagne Gold `#C9A55C`
-- **Neutrals**: `#F8F7F4`, `#E8E6E1`, `#9B978E`, `#3D3B36`
-
-## Getting Started
+## Getting started
 
 ```bash
-# Install dependencies
 npm install
-
-# Start dev server
+cp .env.example .env.local   # fill in Supabase credentials
 npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
 ```
 
-## Project Structure
+## Environment variables
+
+See `.env.example`. Only two frontend-safe variables are needed:
 
 ```
-src/
-├── constants/
-│   └── theme.js          # Colors, shared style tokens
-├── components/
-│   ├── Nav.jsx            # Fixed top navigation
-│   ├── Hero.jsx           # Homepage hero with CTAs
-│   ├── HowItWorks.jsx     # 3-step process section
-│   ├── CoverOptions.jsx   # TPO / TPP / Comprehensive cards
-│   ├── Trust.jsx           # Trust signals grid
-│   ├── CTASection.jsx      # Bottom call-to-action
-│   └── Footer.jsx          # Site footer
-├── pages/
-│   ├── HomePage.jsx        # Assembles homepage sections
-│   ├── AboutPage.jsx       # About page
-│   └── FAQPage.jsx         # FAQ with accordion
-├── App.jsx                 # Root component with routing
-├── main.jsx                # Entry point
-└── index.css               # Global styles & animations
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
 ```
 
-## Deployment
+The anon key has RLS locked down: anonymous users can only insert into `pending_verifications`, not read or update.
 
-Build the project and deploy the `dist/` folder to any static host (Vercel, Netlify, GitHub Pages, etc.)
+## Build and deploy
+
+```bash
+npm run build    # outputs to dist/
+npm run preview  # preview production build locally
+```
+
+Vercel deployment is configured via `vercel.json`. All paths rewrite to `index.html` for client-side routing.
+
+## CI
+
+GitHub Actions runs `npm ci && npm run build` on every PR and push to `main`. See `.github/workflows/ci.yml`.
+
+## Scope notes
+
+- Do not add payment, certificate issuance, or live quote functionality to this repo.
+- All copy must reflect waitlist/lead-capture scope — no promises of instant bind, DMVIC issuance, or live pricing.
+- Named carrier logos or names require formal partnership agreements before use.
 
 ## License
 
